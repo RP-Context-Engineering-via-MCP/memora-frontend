@@ -1,5 +1,4 @@
-// src/components/Signup.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -9,19 +8,111 @@ import {
   Bot,
   Sparkles,
   Lock,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
+
+const API_BASE_URL = 'http://localhost:8000';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSignUp = () => {
-    // After signup, go directly to profile setup
-    navigate('/profile-setup/step1');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setError('');
+  };
+
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleSignUp = async () => {
+    if (!formData.username || !formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      // Match the exact schema expected by UserCreateRequest
+      const requestBody = {
+        username: formData.username.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password
+      };
+
+      console.log('Sending registration request:', requestBody);
+
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log('Registration response:', response.status, data);
+
+      if (!response.ok) {
+        // Log detailed validation errors
+        if (data.detail && Array.isArray(data.detail)) {
+          console.error('Validation errors:', data.detail);
+          const errorMessages = data.detail.map(err => {
+            const location = err.loc ? err.loc.join('.') : 'unknown';
+            return `${location}: ${err.msg}`;
+          }).join(', ');
+          throw new Error(errorMessages);
+        }
+        throw new Error(data.detail || 'Registration failed');
+      }
+
+      // Save to both localStorage and sessionStorage for persistence and session management
+      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('user', JSON.stringify(data));
+
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError(err.message || 'Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSignUp();
+    }
   };
 
   return (
     <div className="min-h-screen flex font-sans">
-      {/* Left Hero - Same as Sign In */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-r-[3rem] shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         
@@ -40,7 +131,6 @@ const Signup = () => {
             </p>
           </div>
           
-          {/* Same AI Chat Phone Mockup */}
           <div className="relative max-w-md mx-auto">
             <div className="bg-slate-800 rounded-[3rem] p-8 shadow-2xl border border-slate-700">
               <div className="bg-white rounded-[2rem] overflow-hidden shadow-inner">
@@ -101,7 +191,6 @@ const Signup = () => {
         </div>
       </div>
 
-      {/* Right Form - Signup Version */}
       <div className="flex-1 flex items-center justify-center bg-slate-50 px-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-12">
@@ -117,12 +206,17 @@ const Signup = () => {
           </div>
 
           <div className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100">
-            {/* OAuth Buttons */}
             <div className="space-y-4 mb-10">
-              <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition">
+              <button 
+                type="button"
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
                 <Chrome size={22} /> Continue with Google
               </button>
-              <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition">
+              <button 
+                type="button"
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
                 <Github size={22} /> Continue with GitHub
               </button>
             </div>
@@ -136,21 +230,39 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Signup Form Fields */}
-            <form className="space-y-6">
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
+                <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            )}
+
+            <div className="space-y-6">
               <input
                 type="text"
-                placeholder="Full Name"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
+                placeholder="Username"
                 className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
               />
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Email Address"
                 className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
               />
               <div className="relative">
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
                   placeholder="Password"
                   className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
                 />
@@ -160,12 +272,13 @@ const Signup = () => {
               <button
                 type="button"
                 onClick={handleSignUp}
-                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3"
+                disabled={loading}
+                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                Create Account
+                {loading ? 'Creating Account...' : 'Create Account'}
                 <ArrowRight size={24} strokeWidth={3} />
               </button>
-            </form>
+            </div>
 
             <p className="text-center mt-10 text-sm text-slate-600">
               Already have an account?{' '}

@@ -1,5 +1,4 @@
-// src/components/Signin.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
@@ -9,18 +8,78 @@ import {
   Bot,
   Sparkles,
   Lock,
+  AlertCircle,
 } from 'lucide-react';
+
+const API_BASE_URL = 'http://127.0.0.1:8000';
 
 const Signin = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSignIn = () => {
-    navigate('/profile-setup/step1');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setError('');
+  };
+
+  const handleSignIn = async () => {
+    if (!formData.username || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed');
+      }
+
+      // Save to both localStorage and sessionStorage for persistence and session management
+      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('user', JSON.stringify(data));
+
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message || 'Failed to sign in. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSignIn();
+    }
   };
 
   return (
     <div className="min-h-screen flex font-sans">
-      {/* Left Hero - AI Context Control */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-r-[3rem] shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         
@@ -30,16 +89,15 @@ const Signin = () => {
               One secure hub to control how every AI sees and remembers you.
             </p>
             
-            <h6 className="text-6xl font-black tracking-tight leading-tight mb-8">
+            <h1 className="text-6xl font-black tracking-tight leading-tight mb-8">
               Control<br />Your AI<br />Context
-            </h6>
+            </h1>
 
             <p className="text-xl text-indigo-100 font-medium max-w-lg">
               Manage your preferences across every AI — keep personal data private, align tone and expertise, and stay in full control.
             </p>
           </div>
           
-          {/* AI Chat Phone Mockup */}
           <div className="relative max-w-md mx-auto">
             <div className="bg-slate-800 rounded-[3rem] p-8 shadow-2xl border border-slate-700">
               <div className="bg-white rounded-[2rem] overflow-hidden shadow-inner">
@@ -100,7 +158,6 @@ const Signin = () => {
         </div>
       </div>
 
-      {/* Right Form */}
       <div className="flex-1 flex items-center justify-center bg-slate-50 px-8">
         <div className="w-full max-w-md">
           <div className="text-center mb-12">
@@ -117,10 +174,16 @@ const Signin = () => {
 
           <div className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100">
             <div className="space-y-4 mb-10">
-              <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition">
+              <button 
+                type="button"
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
                 <Chrome size={22} /> Continue with Google
               </button>
-              <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition">
+              <button 
+                type="button"
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition"
+              >
                 <Github size={22} /> Continue with GitHub
               </button>
             </div>
@@ -134,15 +197,30 @@ const Signin = () => {
               </div>
             </div>
 
-            <form className="space-y-6">
+            {error && (
+              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
+                <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            )}
+
+            <div className="space-y-6">
               <input
                 type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Email or Username"
                 className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
               />
               <div className="relative">
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
                   placeholder="Password"
                   className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
                 />
@@ -152,15 +230,16 @@ const Signin = () => {
               <button
                 type="button"
                 onClick={handleSignIn}
-                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3"
+                disabled={loading}
+                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                Sign In
+                {loading ? 'Signing In...' : 'Sign In'}
                 <ArrowRight size={24} strokeWidth={3} />
               </button>
-            </form>
+            </div>
 
             <p className="text-center mt-10 text-sm text-slate-600">
-              Don’t have an account? <a href="/signup" className="font-bold text-indigo-600 hover:underline">Sign Up</a>
+              Don't have an account? <a href="/signup" className="font-bold text-indigo-600 hover:underline">Sign Up</a>
             </p>
           </div>
 

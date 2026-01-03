@@ -24,12 +24,14 @@ import {
   ArrowUpRight,
   CircleDot,
   Loader2,
-  Check
+  Check,
+  User
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ProfileInsights from './ProfileInsights';
 import SessionManagement from './SessionManagement';
 import ContextLibraryPage from './ContextLibrary';
+import UserProfiles from './UserProfiles';
 import { API_ENDPOINTS } from '../config/api';
 
 const chartData = [
@@ -66,7 +68,12 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const userId = 'user_665390'; // Replace with actual user ID from auth context
+      const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+      if (!userId) {
+        console.error('No user ID found in session');
+        setLoading(false);
+        return;
+      }
       const response = await fetch(API_ENDPOINTS.getUserProfile(userId));
       
       if (response.ok) {
@@ -84,7 +91,12 @@ const Dashboard = () => {
     try {
       setAnalyzing(true);
       setAnalysisSuccess(false);
-      const userId = 'user_665390';
+      const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+      if (!userId) {
+        alert('No user ID found in session');
+        setAnalyzing(false);
+        return;
+      }
       
       const response = await fetch(API_ENDPOINTS.analyzeFromStorage(userId), {
         method: 'POST',
@@ -162,6 +174,7 @@ const Dashboard = () => {
               <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active={currentPage === 'dashboard'} onClick={() => { setCurrentPage('dashboard'); setActiveModal(null); }} />
               <NavItem icon={<Layers size={20} />} label="Behavior Library" active={currentPage === 'library'} onClick={() => { setCurrentPage('library'); setActiveModal(null); }} />
               <NavItem icon={<BrainCircuit size={20} />} label="Profile Insights" active={currentPage === 'insights'} onClick={() => { setCurrentPage('insights'); setActiveModal(null); }} />
+              <NavItem icon={<User size={20} />} label="User Profiles" active={currentPage === 'profiles'} onClick={() => { setCurrentPage('profiles'); setActiveModal(null); }} />
               <NavItem icon={<History size={20} />} label="Session History" active={currentPage === 'sessions'} onClick={() => { setCurrentPage('sessions'); setActiveModal(null); }} />
               <NavItem icon={<Settings size={20} />} label="Settings" />
             </nav>
@@ -509,6 +522,10 @@ const Dashboard = () => {
 
             {currentPage === 'sessions' && (
               <SessionManagement />
+            )}
+
+            {currentPage === 'profiles' && (
+              <UserProfiles />
             )}
           </div>
         </div>
