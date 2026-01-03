@@ -96,7 +96,7 @@ const Signup = () => {
       sessionStorage.setItem('userId', data.user_id);
       sessionStorage.setItem('user', JSON.stringify(data));
 
-      navigate('/dashboard');
+      navigate('/profile-setup/step1');
     } catch (err) {
       console.error('Signup error:', err);
       setError(err.message || 'Failed to create account. Please try again.');

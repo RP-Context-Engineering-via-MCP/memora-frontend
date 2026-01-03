@@ -37,53 +37,58 @@ const UserProfiles = () => {
   // Profile metadata
   const PROFILE_METADATA = {
     P1: {
-      name: 'Professional Profile',
-      description: 'Work-related interactions and business communications',
-      icon: Briefcase,
-      color: 'from-blue-500 to-blue-700',
-      bgColor: 'bg-blue-50',
-      borderColor: 'border-blue-200',
-      textColor: 'text-blue-700'
-    },
-    P2: {
-      name: 'Developer Profile',
-      description: 'Coding assistance, technical discussions, and development tasks',
-      icon: Code,
-      color: 'from-purple-500 to-purple-700',
-      bgColor: 'bg-purple-50',
-      borderColor: 'border-purple-200',
-      textColor: 'text-purple-700'
-    },
-    P3: {
-      name: 'Academic Research',
-      description: 'Research, academic writing, and scholarly communications',
+      name: 'Knowledge Seeker',
+      description: 'Learning-focused interactions, explanations, and concept exploration',
       icon: GraduationCap,
       color: 'from-indigo-500 to-indigo-700',
       bgColor: 'bg-indigo-50',
       borderColor: 'border-indigo-200',
       textColor: 'text-indigo-700'
     },
+
+    P2: {
+      name: 'Productivity Professional',
+      description: 'Work-related tasks, efficiency, and professional productivity',
+      icon: Briefcase,
+      color: 'from-blue-500 to-blue-700',
+      bgColor: 'bg-blue-50',
+      borderColor: 'border-blue-200',
+      textColor: 'text-blue-700'
+    },
+
+    P3: {
+      name: 'Technical Problem Solver',
+      description: 'Programming, debugging, and complex technical problem solving',
+      icon: Code,
+      color: 'from-purple-500 to-purple-700',
+      bgColor: 'bg-purple-50',
+      borderColor: 'border-purple-200',
+      textColor: 'text-purple-700'
+    },
+
     P4: {
-      name: 'Creative Profile',
-      description: 'Design work, creative writing, and brainstorming sessions',
+      name: 'Creative Generator',
+      description: 'Creative writing, ideation, and content generation',
       icon: Palette,
       color: 'from-pink-500 to-pink-700',
       bgColor: 'bg-pink-50',
       borderColor: 'border-pink-200',
       textColor: 'text-pink-700'
     },
+
     P5: {
-      name: 'Personal Assistant',
-      description: 'Personal tasks, reminders, and daily assistance',
+      name: 'Lifestyle Advisor Seeker',
+      description: 'Personal guidance, self-improvement, and lifestyle advice',
       icon: Heart,
       color: 'from-rose-500 to-rose-700',
       bgColor: 'bg-rose-50',
       borderColor: 'border-rose-200',
       textColor: 'text-rose-700'
     },
+
     P6: {
-      name: 'Team Collaboration',
-      description: 'Team coordination, project management, and collaboration',
+      name: 'Casual Explorer',
+      description: 'Casual use, curiosity-driven queries, and entertainment',
       icon: Users,
       color: 'from-teal-500 to-teal-700',
       bgColor: 'bg-teal-50',
