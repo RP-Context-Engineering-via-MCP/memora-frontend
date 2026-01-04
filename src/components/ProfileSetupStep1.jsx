@@ -23,7 +23,6 @@ import {
 
 const ProfileSetupStep1 = () => {
   const [selectedIntents, setSelectedIntents] = useState([]);
-  const [selectedInterests, setSelectedInterests] = useState([]);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -62,29 +61,15 @@ const ProfileSetupStep1 = () => {
     setError('');
   };
 
-  const handleInterestToggle = (code) => {
-    if (selectedInterests.includes(code)) {
-      setSelectedInterests(selectedInterests.filter(c => c !== code));
-    } else if (selectedInterests.length < 4) {
-      setSelectedInterests([...selectedInterests, code]);
-    }
-    setError('');
-  };
-
   const handleContinue = () => {
     if (selectedIntents.length === 0) {
       setError('Please select at least one intent');
       return;
     }
-    if (selectedInterests.length === 0) {
-      setError('Please select at least one area of interest');
-      return;
-    }
 
     // Store selections in sessionStorage to pass to Step 2
     sessionStorage.setItem('onboardingStep1', JSON.stringify({
-      intents: selectedIntents,
-      interests: selectedInterests
+      intents: selectedIntents
     }));
     navigate('/profile-setup/step2');
   };
@@ -109,7 +94,7 @@ const ProfileSetupStep1 = () => {
           <div className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100">
             <div className="text-center mb-10">
               <h2 className="text-4xl font-black text-slate-900">Set up your initial profile</h2>
-              <p className="text-slate-500 mt-3">Step 1 of 2 • Understanding your needs</p>
+              <p className="text-slate-500 mt-3">Step 1 of 2 • What do you use AI for?</p>
             </div>
 
             {error && (
@@ -167,62 +152,6 @@ const ProfileSetupStep1 = () => {
                   <p className="text-xs font-bold text-blue-700">
                     Selected order: {selectedIntents.map((code, idx) => {
                       const opt = intentOptions.find(o => o.code === code);
-                      return `${idx + 1}. ${opt?.label}`;
-                    }).join(' → ')}
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Question 2: Interest Areas (up to 4, ordered) */}
-            <div className="mb-10">
-              <h3 className="text-lg font-bold text-slate-800 mb-3">
-                Which areas are you most interested in? <span className="text-rose-500">*</span>
-              </h3>
-              <p className="text-sm text-slate-500 mb-6">Select up to 4, in order of importance</p>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {interestOptions.map((opt) => {
-                  const isSelected = selectedInterests.includes(opt.code);
-                  const selectionOrder = selectedInterests.indexOf(opt.code);
-                  const isDisabled = !isSelected && selectedInterests.length >= 4;
-                  
-                  return (
-                    <button
-                      key={opt.code}
-                      onClick={() => handleInterestToggle(opt.code)}
-                      disabled={isDisabled}
-                      className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all relative ${
-                        isSelected
-                          ? 'border-emerald-500 bg-emerald-50 text-emerald-700 shadow-sm'
-                          : isDisabled
-                          ? 'border-slate-100 bg-slate-50 text-slate-300 cursor-not-allowed'
-                          : 'border-slate-200 bg-white hover:border-slate-300'
-                      }`}
-                    >
-                      {isSelected && (
-                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg z-10">
-                          {selectionOrder + 1}
-                        </div>
-                      )}
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        isSelected 
-                          ? 'bg-emerald-200 text-emerald-700' 
-                          : isDisabled
-                          ? 'bg-slate-100 text-slate-300'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {opt.icon}
-                      </div>
-                      <span className="font-medium text-xs text-center leading-tight">{opt.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-              {selectedInterests.length > 0 && (
-                <div className="mt-4 p-3 bg-emerald-50 rounded-xl">
-                  <p className="text-xs font-bold text-emerald-700">
-                    Selected order: {selectedInterests.map((code, idx) => {
-                      const opt = interestOptions.find(o => o.code === code);
                       return `${idx + 1}. ${opt?.label}`;
                     }).join(' → ')}
                   </p>
