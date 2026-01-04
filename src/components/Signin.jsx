@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   ShieldCheck,
   ArrowRight,
@@ -10,6 +11,8 @@ import {
   Lock,
   AlertCircle,
 } from 'lucide-react';
+import { handleOAuthLogin } from '../config/api';
+import { GITHUB_CLIENT_ID, OAUTH_CONFIG } from '../config/oauth';
 
 const API_BASE_URL = 'http://127.0.0.1:8000';
 
@@ -71,6 +74,158 @@ const Signin = () => {
       setLoading(false);
     }
   };
+
+  // OAuth Google Login Handler
+  const handleGoogleOAuthSuccess = async (tokenResponse) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      // First, get user info from Google
+      const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+          Authorization: `Bearer ${tokenResponse.access_token}`,
+        },
+      });
+
+      if (!userInfoResponse.ok) {
+        throw new Error('Failed to get user information from Google');
+      }
+
+      const googleUserInfo = await userInfoResponse.json();
+
+      // Send to backend to check if user exists or create new user
+      const backendResponse = await fetch(`${API_BASE_URL}/api/users/oauth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: googleUserInfo.email,
+          name: googleUserInfo.name,
+          provider: 'google',
+          provider_id: googleUserInfo.sub,
+          picture: googleUserInfo.picture,
+        }),
+      });
+
+      const data = await backendResponse.json();
+
+      if (!backendResponse.ok) {
+        throw new Error(data.detail || 'OAuth authentication failed');
+      }
+
+      // Save user data to storage
+      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('user', JSON.stringify(data));
+
+      // Navigate based on whether user is new or existing
+      if (data.is_new_user) {
+        // New user - navigate to onboarding
+        navigate('/profile-setup/step1');
+      } else {
+        // Existing user - navigate to dashboard
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      console.error('OAuth error:', err);
+      setError(err.message || 'Failed to sign in with Google. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleOAuthError = (error) => {
+    console.error('Google OAuth error:', error);
+    setError('Failed to authenticate with Google. Please try again.');
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleOAuthSuccess,
+    onError: handleGoogleOAuthError,
+    flow: 'implicit',
+  });
+
+  // GitHub OAuth Login Handler
+  const handleGitHubLogin = () => {
+    if (!GITHUB_CLIENT_ID) {
+      setError('GitHub OAuth is not configured. Please add VITE_GITHUB_CLIENT_ID to .env');
+      return;
+    }
+
+    const githubAuthUrl = new URL(OAUTH_CONFIG.github.authorizationUrl);
+    githubAuthUrl.searchParams.append('client_id', GITHUB_CLIENT_ID);
+    githubAuthUrl.searchParams.append('redirect_uri', OAUTH_CONFIG.github.redirectUri);
+    githubAuthUrl.searchParams.append('scope', OAUTH_CONFIG.github.scope);
+    githubAuthUrl.searchParams.append('state', Math.random().toString(36).substring(7));
+
+    // Redirect to GitHub OAuth
+    window.location.href = githubAuthUrl.toString();
+  };
+
+  // Handle GitHub OAuth callback
+  useEffect(() => {
+    let isProcessing = false;
+
+    const handleGitHubCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+
+      // Only process if we have both code and state, and haven't started processing
+      if (code && state && !isProcessing) {
+        isProcessing = true;
+        setLoading(true);
+        setError('');
+
+        try {
+          // Send code to backend for exchange
+          const backendResponse = await fetch(`${API_BASE_URL}/api/users/oauth/github/callback`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              code: code,
+              redirect_uri: OAUTH_CONFIG.github.redirectUri,
+            }),
+          });
+
+          const data = await backendResponse.json();
+
+          if (!backendResponse.ok) {
+            throw new Error(data.detail || 'GitHub OAuth authentication failed');
+          }
+
+          // Save user data to storage
+          localStorage.setItem('user', JSON.stringify(data));
+          localStorage.setItem('userId', data.user_id);
+          sessionStorage.setItem('userId', data.user_id);
+          sessionStorage.setItem('user', JSON.stringify(data));
+
+          // Clean up URL before navigation
+          window.history.replaceState({}, document.title, '/signin');
+
+          // Navigate based on whether user is new or existing
+          if (data.is_new_user) {
+            navigate('/profile-setup/step1');
+          } else {
+            navigate('/dashboard');
+          }
+        } catch (err) {
+          console.error('GitHub OAuth error:', err);
+          setError(err.message || 'Failed to sign in with GitHub. Please try again.');
+          // Clean up URL on error
+          window.history.replaceState({}, document.title, '/signin');
+          setLoading(false);
+        }
+      }
+    };
+
+    handleGitHubCallback();
+  }, []); // Empty dependency array - only run once on mount
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -176,13 +331,17 @@ const Signin = () => {
             <div className="space-y-4 mb-10">
               <button 
                 type="button"
-                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition"
+                onClick={() => googleLogin()}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Chrome size={22} /> Continue with Google
               </button>
               <button 
                 type="button"
-                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition"
+                onClick={handleGitHubLogin}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Github size={22} /> Continue with GitHub
               </button>

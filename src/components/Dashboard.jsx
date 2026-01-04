@@ -1,5 +1,6 @@
 // Dashboard.jsx
 import React, { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Settings,
@@ -25,7 +26,8 @@ import {
   CircleDot,
   Loader2,
   Check,
-  User
+  User,
+  LogOut
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ProfileInsights from './ProfileInsights';
@@ -45,6 +47,7 @@ const chartData = [
 ];
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [activeModal, setActiveModal] = useState(null);
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(true);
@@ -57,6 +60,18 @@ const Dashboard = () => {
     { id: 2, name: 'Claude 3.5 Sonnet', connected: true, lastSync: '1h ago', usage: 'Medium', icon: 'brain' },
     { id: 3, name: 'Google Gemini', connected: false, lastSync: '-', usage: 'None', icon: 'sparkles' },
   ]);
+
+  // Handle sign out
+  const handleSignOut = () => {
+    // Clear all user data from storage
+    localStorage.removeItem('user');
+    localStorage.removeItem('userId');
+    sessionStorage.removeItem('user');
+    sessionStorage.removeItem('userId');
+    
+    // Redirect to sign in page
+    navigate('/signin');
+  };
 
   // Fetch profile data for dashboard statistics
   useEffect(() => {
@@ -177,6 +192,9 @@ const Dashboard = () => {
               <NavItem icon={<User size={20} />} label="User Profiles" active={currentPage === 'profiles'} onClick={() => { setCurrentPage('profiles'); setActiveModal(null); }} />
               <NavItem icon={<History size={20} />} label="Session History" active={currentPage === 'sessions'} onClick={() => { setCurrentPage('sessions'); setActiveModal(null); }} />
               <NavItem icon={<Settings size={20} />} label="Settings" />
+              <div className="pt-3 mt-3 border-t border-slate-100">
+                <NavItem icon={<LogOut size={20} />} label="Sign Out" onClick={handleSignOut} />
+              </div>
             </nav>
           </div>
           <div className="mt-auto p-6">
