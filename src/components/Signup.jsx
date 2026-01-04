@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import {
@@ -25,6 +25,7 @@ const Signup = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const hasProcessedCallback = useRef(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -205,16 +206,14 @@ const Signup = () => {
 
   // Handle GitHub OAuth callback
   useEffect(() => {
-    let isProcessing = false;
-
     const handleGitHubCallback = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const code = urlParams.get('code');
       const state = urlParams.get('state');
 
-      // Only process if we have both code and state, and haven't started processing
-      if (code && state && !isProcessing) {
-        isProcessing = true;
+      // Only process if we have both code and state, and haven't processed yet
+      if (code && state && !hasProcessedCallback.current) {
+        hasProcessedCallback.current = true;
         setLoading(true);
         setError('');
 
@@ -265,7 +264,7 @@ const Signup = () => {
     handleGitHubCallback();
   }, []); // Empty dependency array - only run once on mount
 
-  return (  return (
+  return (
     <div className="min-h-screen flex font-sans">
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-r-[3rem] shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
