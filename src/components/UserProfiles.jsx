@@ -158,7 +158,7 @@ const UserProfiles = () => {
       }
 
       // Get user_mode from current profile data or use default
-      const userMode = profileData?.user_mode || 'DRIFT_FALLBACK';
+      const userMode = profileData.user_mode;
 
       // Prepare the payload
       const payload = {
