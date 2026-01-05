@@ -52,9 +52,11 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [profileData, setProfileData] = useState(null);
+  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisSuccess, setAnalysisSuccess] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [tools, setTools] = useState([
     { id: 1, name: 'ChatGPT Plus', connected: true, lastSync: '2m ago', usage: 'High', icon: 'zap' },
     { id: 2, name: 'Claude 3.5 Sonnet', connected: true, lastSync: '1h ago', usage: 'Medium', icon: 'brain' },
@@ -72,6 +74,31 @@ const Dashboard = () => {
     // Redirect to sign in page
     navigate('/signin');
   };
+
+  // Load user data on mount
+  useEffect(() => {
+    const userStr = sessionStorage.getItem('user') || localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        setUserData(user);
+      } catch (err) {
+        console.error('Error parsing user data:', err);
+      }
+    }
+  }, []);
+
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileMenu && !event.target.closest('.profile-menu-container')) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileMenu]);
 
   // Fetch profile data for dashboard statistics
   useEffect(() => {
@@ -192,9 +219,6 @@ const Dashboard = () => {
               <NavItem icon={<User size={20} />} label="User Profiles" active={currentPage === 'profiles'} onClick={() => { setCurrentPage('profiles'); setActiveModal(null); }} />
               <NavItem icon={<History size={20} />} label="Session History" active={currentPage === 'sessions'} onClick={() => { setCurrentPage('sessions'); setActiveModal(null); }} />
               <NavItem icon={<Settings size={20} />} label="Settings" />
-              <div className="pt-3 mt-3 border-t border-slate-100">
-                <NavItem icon={<LogOut size={20} />} label="Sign Out" onClick={handleSignOut} />
-              </div>
             </nav>
           </div>
           <div className="mt-auto p-6">
@@ -236,8 +260,9 @@ const Dashboard = () => {
           </div>
           <div className="flex items-center gap-6 ml-4">
              <div className="hidden md:flex flex-col items-end mr-2">
-                <span className="text-sm font-bold text-slate-900">Alex Rivera</span>
-                <span className="text-[10px] font-bold text-emerald-500 uppercase">Security Lead</span>
+                <span className="text-sm font-bold text-slate-900">
+                  {userData?.name || userData?.username || 'User'}
+                </span>
              </div>
            
              <button className="relative p-2.5 bg-white hover:bg-slate-50 rounded-xl border border-slate-200 text-slate-500 transition-all hover:shadow-lg">
@@ -245,13 +270,36 @@ const Dashboard = () => {
                 <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
              </button>
              <div className="h-10 w-px bg-slate-200"></div>
-             <div className="flex items-center gap-3">
+             <div className="flex items-center gap-3 relative profile-menu-container">
                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-800 to-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-slate-200">
-                  AR
+                  {userData?.name 
+                    ? userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+                    : userData?.username 
+                    ? userData.username.slice(0, 2).toUpperCase()
+                    : 'U'}
                </div>
-               <button className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400">
+               <button 
+                 onClick={() => setShowProfileMenu(!showProfileMenu)}
+                 className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"
+               >
                   <MoreVertical size={18} />
                </button>
+               
+               {/* Profile Dropdown Menu */}
+               {showProfileMenu && (
+                 <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+                   <button
+                     onClick={() => {
+                       setShowProfileMenu(false);
+                       handleSignOut();
+                     }}
+                     className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors"
+                   >
+                     <LogOut size={16} />
+                     Sign Out
+                   </button>
+                 </div>
+               )}
              </div>
           </div>
         </header>
