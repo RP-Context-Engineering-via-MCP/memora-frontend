@@ -201,18 +201,19 @@ const Dashboard = () => {
     <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-slate-900">
       {/* Sidebar */}
       <aside 
-        className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-white border-r border-slate-200 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}
+        className={`fixed inset-y-0 left-0 z-50 w-60 lg:w-64 xl:w-72 bg-white border-r border-slate-200 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}
       >
         <div className="flex flex-col h-full">
-          <div className="p-4 sm:p-6 lg:p-8">
-            <div className="flex items-center gap-2 sm:gap-3 mb-8 lg:mb-10 group cursor-pointer">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
-                <ShieldCheck size={20} className="sm:hidden" strokeWidth={2.5} />
-                <ShieldCheck size={26} className="hidden sm:block" strokeWidth={2.5} />
+          <div className="p-4 lg:p-6 xl:p-8">
+            <div className="flex items-center gap-2 mb-6 lg:mb-8 xl:mb-10 group cursor-pointer">
+              <div className="w-9 h-9 lg:w-10 lg:h-10 xl:w-11 xl:h-11 bg-indigo-600 rounded-xl lg:rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
+                <ShieldCheck size={20} className="lg:hidden" strokeWidth={2.5} />
+                <ShieldCheck size={22} className="hidden lg:block xl:hidden" strokeWidth={2.5} />
+                <ShieldCheck size={26} className="hidden xl:block" strokeWidth={2.5} />
               </div>
               <div>
-                <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 block">Memora</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Enterprise Shield</span>
+                <span className="font-extrabold text-lg lg:text-xl xl:text-2xl tracking-tight text-slate-900 block">Memora</span>
+                <span className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em] lg:tracking-[0.2em]">Enterprise Shield</span>
               </div>
             </div>
             <nav className="space-y-1.5">
@@ -224,25 +225,25 @@ const Dashboard = () => {
               <NavItem icon={<Settings size={20} />} label="Settings" />
             </nav>
           </div>
-          <div className="mt-auto p-4 sm:p-6">
+          <div className="mt-auto p-3 lg:p-4 xl:p-6">
             <div>
-              <div className="p-4 sm:p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="text-xs font-bold text-slate-500">Storage Capacity</span>
-                  <span className="text-xs font-black text-indigo-700">78%</span>
+              <div className="p-3 lg:p-4 xl:p-5 bg-indigo-50/50 rounded-xl lg:rounded-2xl border border-indigo-100">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-[10px] lg:text-xs font-bold text-slate-500">Storage Capacity</span>
+                  <span className="text-[10px] lg:text-xs font-black text-indigo-700">78%</span>
                 </div>
-                <div className="w-full bg-indigo-100 rounded-full h-2 mb-3 overflow-hidden">
+                <div className="w-full bg-indigo-100 rounded-full h-1.5 lg:h-2 mb-2 overflow-hidden">
                   <div className="bg-gradient-to-r from-indigo-500 to-indigo-700 h-full rounded-full w-[78%] transition-all duration-1000 ease-out"></div>
                 </div>
-                <p className="text-[10px] text-indigo-400 font-medium">1.2GB of 1.5GB allocated</p>
+                <p className="text-[9px] lg:text-[10px] text-indigo-400 font-medium">1.2GB of 1.5GB</p>
               </div>
             
-              <div className="mt-6 flex items-center justify-between px-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Network Live</span>
+              <div className="mt-3 lg:mt-4 xl:mt-6 flex items-center justify-between px-1">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span className="text-[9px] lg:text-[10px] xl:text-xs font-bold text-slate-500 uppercase tracking-wide lg:tracking-widest">Network Live</span>
                 </div>
-                <CircleDot size={14} className="text-slate-300" />
+                <CircleDot size={12} className="text-slate-300" />
               </div>
             </div>
           </div>
@@ -252,7 +253,7 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Navbar */}
-        <header className="h-16 sm:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0">
+        <header className="h-14 lg:h-16 xl:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 lg:px-6 xl:px-8 shrink-0">
           {/* Mobile Menu Button */}
           <button 
             onClick={() => setSidebarOpen(!isSidebarOpen)}
@@ -319,33 +320,34 @@ const Dashboard = () => {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-4 lg:p-6 xl:p-8 bg-slate-50/50">
           <div className="max-w-7xl mx-auto">
             {currentPage === 'dashboard' && (
               <div className="space-y-6 sm:space-y-8">
                 {/* Dashboard Content */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 lg:gap-4">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Enterprise Overview</h1>
-                    <p className="text-slate-500 font-medium mt-1">Monitor real-time context isolation and privacy shields.</p>
+                    <h1 className="text-xl lg:text-2xl xl:text-3xl font-black text-slate-900 tracking-tight">Enterprise Overview</h1>
+                    <p className="text-sm lg:text-base text-slate-500 font-medium mt-0.5 lg:mt-1">Monitor real-time context isolation and privacy shields.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-3 lg:gap-4 xl:gap-6">
                   {stats.map((stat, i) => (
-                    <div key={i} className="group bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                      <div className="flex justify-between items-start mb-3 sm:mb-4">
-                        <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
-                          <stat.icon size={22} strokeWidth={2.5} />
+                    <div key={i} className="group bg-white p-4 lg:p-5 xl:p-6 rounded-xl lg:rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="flex justify-between items-start mb-2 lg:mb-3 xl:mb-4">
+                        <div className={`p-2 lg:p-2.5 xl:p-3 rounded-lg lg:rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
+                          <stat.icon size={20} className="lg:hidden" strokeWidth={2.5} />
+                          <stat.icon size={22} className="hidden lg:block" strokeWidth={2.5} />
                         </div>
                         <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${stat.type === 'positive' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-500'}`}>
                           {stat.type === 'positive' && <ArrowUpRight size={14} />}
                           {stat.change}
                         </div>
                       </div>
-                      <div className="space-y-1">
-                        <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
-                        <p className="text-2xl sm:text-3xl font-black text-slate-900 leading-none">{stat.value}</p>
+                      <div className="space-y-0.5 lg:space-y-1">
+                        <p className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-wide lg:tracking-widest leading-none">{stat.label}</p>
+                        <p className="text-xl lg:text-2xl xl:text-3xl font-black text-slate-900 leading-none">{stat.value}</p>
                       </div>
                       <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
                          
@@ -357,8 +359,8 @@ const Dashboard = () => {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                  <div className="lg:col-span-2 relative group overflow-hidden bg-white rounded-2xl sm:rounded-[2.5rem] p-6 sm:p-8 lg:p-10 border border-slate-200 shadow-xl shadow-slate-200/40">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-8">
+                  <div className="lg:col-span-2 relative group overflow-hidden bg-white rounded-xl lg:rounded-2xl xl:rounded-[2.5rem] p-5 lg:p-6 xl:p-10 border border-slate-200 shadow-lg lg:shadow-xl shadow-slate-200/40">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-indigo-50/50 to-transparent rounded-full -mr-40 -mt-40 z-0 opacity-80 group-hover:scale-110 transition-transform duration-1000"></div>
                   
                     <div className="relative z-10 flex flex-col md:flex-row justify-between h-full gap-8">
@@ -372,7 +374,7 @@ const Dashboard = () => {
                           </div>
                         </div>
                       
-                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-3 sm:mb-4 tracking-tight leading-tight">
+                        <h2 className="text-xl lg:text-2xl xl:text-4xl font-black text-slate-900 mb-2 lg:mb-3 xl:mb-4 tracking-tight leading-tight">
                           {loading ? (
                             <div className="flex items-center gap-3">
                               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -391,7 +393,7 @@ const Dashboard = () => {
                           )}
                         </h2>
                         
-                        <p className="text-slate-500 text-base sm:text-lg mb-6 sm:mb-8 max-w-lg leading-relaxed font-medium italic">
+                        <p className="text-sm lg:text-base xl:text-lg text-slate-500 mb-4 lg:mb-6 xl:mb-8 max-w-lg leading-relaxed font-medium italic">
                           {loading ? (
                             '"Analyzing your interaction patterns..."'
                           ) : profileData ? (
@@ -401,11 +403,11 @@ const Dashboard = () => {
                           )}
                         </p>
                       
-                        <div className="flex flex-wrap gap-3 sm:gap-4">
+                        <div className="flex flex-wrap gap-2 lg:gap-3 xl:gap-4">
                           <button 
                             onClick={runProfileAnalysis}
                             disabled={analyzing}
-                            className={`px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-xl transition-all duration-300 flex items-center gap-2 ${
+                            className={`px-4 lg:px-6 xl:px-8 py-2.5 lg:py-3 xl:py-3.5 rounded-lg lg:rounded-xl xl:rounded-2xl text-xs lg:text-sm font-bold shadow-lg lg:shadow-xl transition-all duration-300 flex items-center gap-1.5 lg:gap-2 whitespace-nowrap ${
                               analyzing 
                                 ? 'bg-slate-400 cursor-not-allowed' 
                                 : analysisSuccess
@@ -432,13 +434,13 @@ const Dashboard = () => {
                           </button>
                           <button 
                             onClick={() => setCurrentPage('insights')} 
-                            className="bg-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-xl shadow-indigo-100 hover:shadow-2xl hover:bg-indigo-700 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
+                            className="bg-indigo-600 text-white px-4 lg:px-6 xl:px-8 py-2.5 lg:py-3 xl:py-3.5 rounded-lg lg:rounded-xl xl:rounded-2xl text-xs lg:text-sm font-bold shadow-lg lg:shadow-xl shadow-indigo-100 hover:shadow-2xl hover:bg-indigo-700 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-1.5 lg:gap-2 whitespace-nowrap"
                           >
                             View Profile <ChevronRight size={18} strokeWidth={2.5} />
                           </button>
                           <button 
                             onClick={() => setCurrentPage('library')}
-                            className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all duration-300 flex items-center gap-2"
+                            className="px-4 lg:px-6 xl:px-8 py-2.5 lg:py-3 xl:py-3.5 rounded-lg lg:rounded-xl xl:rounded-2xl text-xs lg:text-sm font-bold text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all duration-300 flex items-center gap-1.5 lg:gap-2 whitespace-nowrap"
                           >
                             View Library <Layers size={16} strokeWidth={2.5} />
                           </button>
