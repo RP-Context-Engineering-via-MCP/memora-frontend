@@ -157,14 +157,16 @@ const UserProfiles = () => {
         return;
       }
 
-      // Get user_mode from current profile data or use default
-      const userMode = profileData.user_mode;
+      // Validate behavior is either object or array
+      if (typeof behaviorData.behavior !== 'object') {
+        setJsonError('"behavior" field must be an object or an array.');
+        return;
+      }
 
       // Prepare the payload
       const payload = {
         ...behaviorData,
-        user_id: userId,
-        user_mode: userMode
+        user_id: userId
       };
 
       // Send POST request
@@ -678,7 +680,7 @@ const UserProfiles = () => {
               disabled={assigning}
             />
             <p className="text-xs text-slate-500 mt-2">
-              Paste your behavior JSON data. Do not include user_id or user_mode fields.
+              Paste your behavior JSON data. Supports single behavior object or array of behaviors. Do not include user_id field.
             </p>
           </div>
 
