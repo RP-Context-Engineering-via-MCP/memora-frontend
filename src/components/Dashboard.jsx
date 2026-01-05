@@ -200,7 +200,9 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-slate-900">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-white border-r border-slate-200 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
+      <aside 
+        className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-white border-r border-slate-200 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}
+      >
         <div className="flex flex-col h-full">
           <div className="p-4 sm:p-6 lg:p-8">
             <div className="flex items-center gap-2 sm:gap-3 mb-8 lg:mb-10 group cursor-pointer">
@@ -223,23 +225,25 @@ const Dashboard = () => {
             </nav>
           </div>
           <div className="mt-auto p-4 sm:p-6">
-            <div className="p-4 sm:p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100">
-              <div className="flex justify-between items-center mb-3">
-                <span className="text-xs font-bold text-slate-500">Storage Capacity</span>
-                <span className="text-xs font-black text-indigo-700">78%</span>
+            <div>
+              <div className="p-4 sm:p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs font-bold text-slate-500">Storage Capacity</span>
+                  <span className="text-xs font-black text-indigo-700">78%</span>
+                </div>
+                <div className="w-full bg-indigo-100 rounded-full h-2 mb-3 overflow-hidden">
+                  <div className="bg-gradient-to-r from-indigo-500 to-indigo-700 h-full rounded-full w-[78%] transition-all duration-1000 ease-out"></div>
+                </div>
+                <p className="text-[10px] text-indigo-400 font-medium">1.2GB of 1.5GB allocated</p>
               </div>
-              <div className="w-full bg-indigo-100 rounded-full h-2 mb-3 overflow-hidden">
-                <div className="bg-gradient-to-r from-indigo-500 to-indigo-700 h-full rounded-full w-[78%] transition-all duration-1000 ease-out"></div>
+            
+              <div className="mt-6 flex items-center justify-between px-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Network Live</span>
+                </div>
+                <CircleDot size={14} className="text-slate-300" />
               </div>
-              <p className="text-[10px] text-indigo-400 font-medium">1.2GB of 1.5GB allocated</p>
-            </div>
-          
-            <div className="mt-6 flex items-center justify-between px-2">
-              <div className="flex items-center gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Network Live</span>
-              </div>
-              <CircleDot size={14} className="text-slate-300" />
             </div>
           </div>
         </div>
@@ -618,7 +622,7 @@ const Dashboard = () => {
 const NavItem = ({ icon, label, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`w-full flex items-center gap-3.5 px-6 py-4 rounded-2xl font-bold text-sm transition-all group ${
+    className={`w-full flex items-center gap-3.5 px-4 sm:px-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm transition-all group ${
       active
         ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-100 translate-x-1'
         : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
