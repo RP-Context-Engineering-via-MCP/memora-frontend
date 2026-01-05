@@ -233,26 +233,26 @@ const Signin = () => {
   };
 
   return (
-    <div className="min-h-screen flex font-sans">
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-r-[3rem] shadow-2xl">
+    <div className="min-h-screen flex flex-col lg:flex-row font-sans">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-none lg:rounded-r-[3rem] shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         
-        <div className="relative z-10 flex flex-col justify-between h-full p-16">
+        <div className="relative z-10 flex flex-col justify-between h-full p-8 lg:p-16">
           <div>
-            <p className="text-indigo-200 text-lg font-medium mb-12 leading-relaxed">
+            <p className="text-indigo-200 text-base lg:text-lg font-medium mb-8 lg:mb-12 leading-relaxed">
               One secure hub to control how every AI sees and remembers you.
             </p>
             
-            <h1 className="text-6xl font-black tracking-tight leading-tight mb-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6 lg:mb-8">
               Control<br />Your AI<br />Context
             </h1>
 
-            <p className="text-xl text-indigo-100 font-medium max-w-lg">
+            <p className="text-lg lg:text-xl text-indigo-100 font-medium max-w-lg">
               Manage your preferences across every AI — keep personal data private, align tone and expertise, and stay in full control.
             </p>
           </div>
           
-          <div className="relative max-w-md mx-auto">
+          <div className="relative max-w-md mx-auto hidden lg:block">
             <div className="bg-slate-800 rounded-[3rem] p-8 shadow-2xl border border-slate-700">
               <div className="bg-white rounded-[2rem] overflow-hidden shadow-inner">
                 <div className="bg-gradient-to-b from-indigo-50 to-slate-50 h-96 flex flex-col">
@@ -312,27 +312,28 @@ const Signin = () => {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center bg-slate-50 px-8">
+      <div className="flex-1 flex items-center justify-center bg-slate-50 px-4 sm:px-6 lg:px-8 py-8 lg:py-0">
         <div className="w-full max-w-md">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                <ShieldCheck size={28} strokeWidth={2.5} />
+          <div className="text-center mb-8 lg:mb-12">
+            <div className="inline-flex items-center gap-2 sm:gap-3 mb-6 lg:mb-8">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-xl">
+                <ShieldCheck size={24} className="sm:hidden" strokeWidth={2.5} />
+                <ShieldCheck size={28} className="hidden sm:block" strokeWidth={2.5} />
               </div>
-              <span className="font-extrabold text-3xl tracking-tight text-slate-900">
+              <span className="font-extrabold text-2xl sm:text-3xl tracking-tight text-slate-900">
                 Memora
               </span>
             </div>
-            <h2 className="text-4xl font-black text-slate-900 mb-4">Sign In</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3 sm:mb-4">Sign In</h2>
           </div>
 
-          <div className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100">
-            <div className="space-y-4 mb-10">
+          <div className="bg-white rounded-2xl sm:rounded-[3rem] p-6 sm:p-8 lg:p-12 shadow-2xl border border-slate-100">
+            <div className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
               <button 
                 type="button"
                 onClick={() => googleLogin()}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 border border-slate-200 rounded-full font-bold text-sm sm:text-base text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Chrome size={22} /> Continue with Google
               </button>
@@ -356,13 +357,13 @@ const Signin = () => {
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-start gap-3">
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-xl sm:rounded-2xl flex items-start gap-2 sm:gap-3">
                 <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-red-800">{error}</p>
               </div>
             )}
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <input
                 type="text"
                 name="username"
@@ -370,7 +371,7 @@ const Signin = () => {
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Email or Username"
-                className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
+                className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-transparent border border-slate-300 rounded-full text-base sm:text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
               />
               <div className="relative">
                 <input
@@ -380,7 +381,7 @@ const Signin = () => {
                   onChange={handleInputChange}
                   onKeyPress={handleKeyPress}
                   placeholder="Password"
-                  className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
+                  className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-transparent border border-slate-300 rounded-full text-base sm:text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
                 />
                 <Lock size={20} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400" />
               </div>
@@ -389,19 +390,19 @@ const Signin = () => {
                 type="button"
                 onClick={handleSignIn}
                 disabled={loading}
-                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                className="w-full py-4 sm:py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-base sm:text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 {loading ? 'Signing In...' : 'Sign In'}
                 <ArrowRight size={24} strokeWidth={3} />
               </button>
             </div>
 
-            <p className="text-center mt-10 text-sm text-slate-600">
+            <p className="text-center mt-8 lg:mt-10 text-sm text-slate-600">
               Don't have an account? <a href="/signup" className="font-bold text-indigo-600 hover:underline">Sign Up</a>
             </p>
           </div>
 
-          <p className="text-center mt-12 text-xs text-slate-400">
+          <p className="text-center mt-8 lg:mt-12 text-xs text-slate-400">
             © 2005-2025 Memora Inc. • Contact Us • English ▼
           </p>
         </div>

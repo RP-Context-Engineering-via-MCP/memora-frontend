@@ -75,26 +75,26 @@ const ProfileSetupStep1 = () => {
   };
 
   return (
-    <div className="min-h-screen flex font-sans">
+    <div className="min-h-screen flex flex-col lg:flex-row font-sans">
       {/* Left Hero */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-r-[3rem] shadow-2xl">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-none lg:rounded-r-[3rem] shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-        <div className="relative z-10 p-16 flex flex-col justify-center">
-          <h1 className="text-6xl font-black tracking-tight leading-tight mb-8">
+        <div className="relative z-10 p-8 lg:p-16 flex flex-col justify-center">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6 lg:mb-8">
             Personalize<br />Your AI<br />Experience
           </h1>
-          <p className="text-xl text-indigo-100 font-medium max-w-lg">
+          <p className="text-lg lg:text-xl text-indigo-100 font-medium max-w-lg">
             Tell us how you use AI — we’ll tailor responses, tone, and depth from day one.
           </p>
         </div>
       </div>
       {/* Right Form */}
-      <div className="flex-1 flex items-center justify-center bg-slate-50 px-8 py-8 overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center bg-slate-50 px-4 sm:px-6 lg:px-8 py-6 lg:py-8 overflow-y-auto">
         <div className="w-full max-w-2xl">
-          <div className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100">
-            <div className="text-center mb-10">
-              <h2 className="text-4xl font-black text-slate-900">Set up your initial profile</h2>
-              <p className="text-slate-500 mt-3">Step 1 of 2 • What do you use AI for?</p>
+          <div className="bg-white rounded-2xl sm:rounded-[3rem] p-6 sm:p-8 lg:p-12 shadow-2xl border border-slate-100">
+            <div className="text-center mb-8 lg:mb-10">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900">Set up your initial profile</h2>
+              <p className="text-sm sm:text-base text-slate-500 mt-2 sm:mt-3">Step 1 of 2 • What do you use AI for?</p>
             </div>
 
             {error && (

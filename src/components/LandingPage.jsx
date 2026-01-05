@@ -131,16 +131,17 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-slate-50 text-slate-900">
       {/* Navbar - Fixed Shield Icon */}
-      <header className="h-20 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 shrink-0 fixed top-0 left-0 right-0 z-50 shadow-sm">
-        <div className="flex items-center gap-3">
+      <header className="h-16 sm:h-20 bg-white/90 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0 fixed top-0 left-0 right-0 z-50 shadow-sm">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Custom clean logo container - no blurry outer shadow */}
-          <div className="w-11 h-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white 
+          <div className="w-9 h-9 sm:w-11 sm:h-11 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white 
                           shadow-lg shadow-indigo-600/30 ring-4 ring-indigo-600/10">
-            <ShieldCheck size={26} strokeWidth={2.5} />
+            <ShieldCheck size={20} className="sm:hidden" strokeWidth={2.5} />
+            <ShieldCheck size={26} className="hidden sm:block" strokeWidth={2.5} />
           </div>
-          <span className="font-extrabold text-2xl tracking-tight text-slate-900">Memora</span>
+          <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900">Memora</span>
         </div>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
           <nav className="hidden md:flex gap-8">
             <NavLink href="#features">Features</NavLink>
             <NavLink href="#how-to-join">How to Join</NavLink>
@@ -165,20 +166,20 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative flex items-center justify-center py-32 overflow-hidden mt-20">
+      <section className="relative flex items-center justify-center py-20 sm:py-28 lg:py-32 overflow-hidden mt-16 sm:mt-20">
         <motion.div
           style={{ opacity: heroOpacity, scale: heroScale }}
           className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="relative z-10 text-center px-8 max-w-4xl">
+        <div className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl">
           <FadeInSection>
-            <h1 className="text-6xl font-black tracking-tight leading-tight mb-8 text-white">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6 sm:mb-8 text-white">
               Control Your AI Context
             </h1>
           </FadeInSection>
           <FadeInSection delay={0.2}>
-            <p className="text-xl text-indigo-100 font-medium mb-12 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg lg:text-xl text-indigo-100 font-medium mb-8 sm:mb-12 max-w-2xl mx-auto">
               Memora is your centralized hub for managing user context across multiple AI platforms. Maintain consistent, evolving personalization while protecting your privacy.
             </p>
           </FadeInSection>
@@ -193,10 +194,10 @@ const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="features" className="py-16 sm:py-20 lg:py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <h2 className="text-4xl font-black text-slate-900 mb-12 text-center">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-8 sm:mb-10 lg:mb-12 text-center">
               Key Features
             </h2>
           </FadeInSection>
@@ -214,16 +215,17 @@ const LandingPage = () => {
                   <motion.div
                     whileHover={{ y: -12, scale: 1.03 }}
                     transition={{ type: "spring", stiffness: 300 }}
-                    className="group bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500"
+                    className="group bg-white p-6 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-2xl transition-all duration-500"
                   >
                     <motion.div
-                      className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-6"
+                      className="w-12 h-12 sm:w-14 sm:h-14 bg-indigo-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-indigo-600 mb-4 sm:mb-6"
                       whileHover={{ scale: 1.2, rotate: 10 }}
                     >
-                      <feature.icon size={28} strokeWidth={2.5} />
+                      <feature.icon size={24} className="sm:hidden" strokeWidth={2.5} />
+                      <feature.icon size={28} className="hidden sm:block" strokeWidth={2.5} />
                     </motion.div>
-                    <h3 className="text-xl font-black text-slate-900 mb-4">{feature.title}</h3>
-                    <p className="text-slate-500 font-medium">{feature.desc}</p>
+                    <h3 className="text-lg sm:text-xl font-black text-slate-900 mb-3 sm:mb-4">{feature.title}</h3>
+                    <p className="text-sm sm:text-base text-slate-500 font-medium">{feature.desc}</p>
                   </motion.div>
                 </StaggerItem>
               ))}
@@ -233,13 +235,13 @@ const LandingPage = () => {
       </section>
 
       {/* How to Join Section */}
-      <section id="how-to-join" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="how-to-join" className="py-16 sm:py-20 lg:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <h2 className="text-4xl font-black text-slate-900 mb-12 text-center">How to Join</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-8 sm:mb-10 lg:mb-12 text-center">How to Join</h2>
           </FadeInSection>
           <StaggerContainer>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
               {[
                 { step: 1, title: 'Sign Up', desc: 'Create an account with your email or social login.' },
                 { step: 2, title: 'Set Up Profile', desc: 'Complete a quick onboarding to define your initial preferences.' },
@@ -249,25 +251,25 @@ const LandingPage = () => {
                   <motion.div
                     whileHover={{ scale: 1.08 }}
                     transition={{ type: "spring", stiffness: 400 }}
-                    className="flex flex-col items-center text-center p-8 bg-slate-50 rounded-3xl border border-slate-200"
+                    className="flex flex-col items-center text-center p-6 sm:p-8 bg-slate-50 rounded-2xl sm:rounded-3xl border border-slate-200"
                   >
                     <motion.div
                       whileHover={{ rotate: 360, scale: 1.2 }}
                       transition={{ duration: 0.8, type: "spring" }}
-                      className="w-20 h-20 bg-indigo-600 text-white rounded-full flex items-center justify-center text-3xl font-black mb-8 shadow-xl"
+                      className="w-16 h-16 sm:w-20 sm:h-20 bg-indigo-600 text-white rounded-full flex items-center justify-center text-2xl sm:text-3xl font-black mb-6 sm:mb-8 shadow-xl"
                     >
                       {step.step}
                     </motion.div>
-                    <h3 className="text-2xl font-black text-slate-900 mb-4">{step.title}</h3>
-                    <p className="text-slate-500 font-medium text-lg">{step.desc}</p>
+                    <h3 className="text-xl sm:text-2xl font-black text-slate-900 mb-3 sm:mb-4">{step.title}</h3>
+                    <p className="text-sm sm:text-base lg:text-lg text-slate-500 font-medium">{step.desc}</p>
                   </motion.div>
                 </StaggerItem>
               ))}
             </div>
           </StaggerContainer>
           <FadeInSection delay={0.3}>
-            <div className="flex justify-center mt-16">
-              <AnimatedButton onClick={handleGetStarted} variant="primary" className="text-lg">
+            <div className="flex justify-center mt-8 sm:mt-12 lg:mt-16">
+              <AnimatedButton onClick={handleGetStarted} variant="primary" className="text-base sm:text-lg">
                 Join Now <ChevronRight size={24} strokeWidth={3} />
               </AnimatedButton>
             </div>
@@ -276,25 +278,28 @@ const LandingPage = () => {
       </section>
 
       {/* About Us Section */}
-      <section id="about" className="py-24 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="about" className="py-16 sm:py-20 lg:py-24 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <h2 className="text-4xl font-black text-slate-900 mb-12 text-center">About Us</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-8 sm:mb-10 lg:mb-12 text-center">About Us</h2>
           </FadeInSection>
           <FadeInSection delay={0.2}>
             <div className="max-w-3xl mx-auto text-center">
-              <p className="text-xl text-slate-600 font-medium mb-12">
+              <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-medium mb-8 sm:mb-12">
                 Memora is built by a team of AI enthusiasts dedicated to bridging the gap between users and multiple AI systems. We believe in creating seamless, secure, and personalized AI experiences.
               </p>
-              <motion.div className="flex justify-center gap-12">
+              <motion.div className="flex justify-center gap-6 sm:gap-8 lg:gap-12">
                 <motion.div whileHover={{ scale: 1.3, rotate: 15 }} transition={{ type: "spring" }}>
-                  <Users size={56} className="text-indigo-600" />
+                  <Users size={40} className="sm:hidden text-indigo-600" />
+                  <Users size={56} className="hidden sm:block text-indigo-600" />
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.3, rotate: -15 }} transition={{ type: "spring" }}>
-                  <Globe size={56} className="text-indigo-600" />
+                  <Globe size={40} className="sm:hidden text-indigo-600" />
+                  <Globe size={56} className="hidden sm:block text-indigo-600" />
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.3, rotate: 15 }} transition={{ type: "spring" }}>
-                  <ExternalLink size={56} className="text-indigo-600" />
+                  <ExternalLink size={40} className="sm:hidden text-indigo-600" />
+                  <ExternalLink size={56} className="hidden sm:block text-indigo-600" />
                 </motion.div>
               </motion.div>
             </div>
@@ -303,14 +308,14 @@ const LandingPage = () => {
       </section>
 
       {/* Vision Section */}
-      <section id="vision" className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-8">
+      <section id="vision" className="py-16 sm:py-20 lg:py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <h2 className="text-4xl font-black text-slate-900 mb-12 text-center">Our Vision</h2>
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-8 sm:mb-10 lg:mb-12 text-center">Our Vision</h2>
           </FadeInSection>
           <FadeInSection delay={0.2}>
             <div className="max-w-3xl mx-auto text-center">
-              <p className="text-xl text-slate-600 font-medium mb-12">
+              <p className="text-base sm:text-lg lg:text-xl text-slate-600 font-medium mb-8 sm:mb-12">
                 To create a world where AI understands you deeply and consistently across all platforms, evolving with you while prioritizing your privacy and control.
               </p>
             </div>
@@ -319,8 +324,8 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-slate-900 text-slate-300 text-center">
-        <p className="text-sm">© 2005-2025 Memora Inc. • <a href="#" className="hover:text-white transition">Contact Us</a> • <a href="#" className="hover:text-white transition">Privacy Policy</a></p>
+      <footer className="py-8 sm:py-12 bg-slate-900 text-slate-300 text-center px-4">
+        <p className="text-xs sm:text-sm">© 2005-2025 Memora Inc. • <a href="#" className="hover:text-white transition">Contact Us</a> • <a href="#" className="hover:text-white transition">Privacy Policy</a></p>
       </footer>
     </div>
   );

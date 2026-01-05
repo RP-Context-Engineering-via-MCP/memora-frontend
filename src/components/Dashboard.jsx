@@ -200,15 +200,16 @@ const Dashboard = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 font-sans text-slate-900">
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-slate-200 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
+      <aside className={`fixed inset-y-0 left-0 z-50 w-64 sm:w-72 bg-white border-r border-slate-200 transition-transform duration-300 transform ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:translate-x-0`}>
         <div className="flex flex-col h-full">
-          <div className="p-8">
-            <div className="flex items-center gap-3 mb-10 group cursor-pointer">
-              <div className="w-11 h-11 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
-                <ShieldCheck size={26} strokeWidth={2.5} />
+          <div className="p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center gap-2 sm:gap-3 mb-8 lg:mb-10 group cursor-pointer">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200 group-hover:scale-110 transition-transform duration-300">
+                <ShieldCheck size={20} className="sm:hidden" strokeWidth={2.5} />
+                <ShieldCheck size={26} className="hidden sm:block" strokeWidth={2.5} />
               </div>
               <div>
-                <span className="font-extrabold text-2xl tracking-tight text-slate-900 block">Memora</span>
+                <span className="font-extrabold text-xl sm:text-2xl tracking-tight text-slate-900 block">Memora</span>
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Enterprise Shield</span>
               </div>
             </div>
@@ -221,8 +222,8 @@ const Dashboard = () => {
               <NavItem icon={<Settings size={20} />} label="Settings" />
             </nav>
           </div>
-          <div className="mt-auto p-6">
-            <div className="p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100">
+          <div className="mt-auto p-4 sm:p-6">
+            <div className="p-4 sm:p-5 bg-indigo-50/50 rounded-2xl border border-indigo-100">
               <div className="flex justify-between items-center mb-3">
                 <span className="text-xs font-bold text-slate-500">Storage Capacity</span>
                 <span className="text-xs font-black text-indigo-700">78%</span>
@@ -247,31 +248,40 @@ const Dashboard = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Navbar */}
-        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
-          <div className="flex-1 max-w-xl">
+        <header className="h-16 sm:h-20 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0">
+          {/* Mobile Menu Button */}
+          <button 
+            onClick={() => setSidebarOpen(!isSidebarOpen)}
+            className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors"
+          >
+            <MoreVertical size={20} />
+          </button>
+          
+          <div className="flex-1 max-w-xl hidden sm:block">
             <div className="relative group">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={18} />
+              <Search className="absolute left-2.5 sm:left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" size={16} />
               <input
                 type="text"
                 placeholder={currentPage === 'library' ? 'Search behaviors, prompts...' : 'Find sessions, profiles, or redaction logs...'}
-                className="w-full pl-11 pr-4 py-2.5 bg-slate-100 border-transparent border-2 rounded-xl text-sm font-medium focus:outline-none focus:bg-white focus:border-indigo-500/20 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none"
+                className="w-full pl-8 sm:pl-11 pr-3 sm:pr-4 py-2 sm:py-2.5 bg-slate-100 border-transparent border-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium focus:outline-none focus:bg-white focus:border-indigo-500/20 focus:ring-4 focus:ring-indigo-500/5 transition-all outline-none"
               />
             </div>
           </div>
-          <div className="flex items-center gap-6 ml-4">
+          <div className="flex items-center gap-3 sm:gap-4 lg:gap-6 ml-2 sm:ml-4">
              <div className="hidden md:flex flex-col items-end mr-2">
-                <span className="text-sm font-bold text-slate-900">
+                <span className="text-xs sm:text-sm font-bold text-slate-900">
                   {userData?.name || userData?.username || 'User'}
                 </span>
              </div>
            
-             <button className="relative p-2.5 bg-white hover:bg-slate-50 rounded-xl border border-slate-200 text-slate-500 transition-all hover:shadow-lg">
-                <Bell size={20} />
+             <button className="relative p-2 sm:p-2.5 bg-white hover:bg-slate-50 rounded-lg sm:rounded-xl border border-slate-200 text-slate-500 transition-all hover:shadow-lg">
+                <Bell size={18} className="sm:hidden" />
+                <Bell size={20} className="hidden sm:block" />
                 <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
              </button>
-             <div className="h-10 w-px bg-slate-200"></div>
-             <div className="flex items-center gap-3 relative profile-menu-container">
-               <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-slate-800 to-slate-900 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-slate-200">
+             <div className="h-10 w-px bg-slate-200 hidden sm:block"></div>
+             <div className="flex items-center gap-2 sm:gap-3 relative profile-menu-container">
+               <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-tr from-slate-800 to-slate-900 flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-lg shadow-slate-200">
                   {userData?.name 
                     ? userData.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
                     : userData?.username 
@@ -305,23 +315,23 @@ const Dashboard = () => {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 bg-slate-50/50">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50/50">
           <div className="max-w-7xl mx-auto">
             {currentPage === 'dashboard' && (
-              <div className="space-y-8">
+              <div className="space-y-6 sm:space-y-8">
                 {/* Dashboard Content */}
-                <div className="flex justify-between items-end">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                   <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Enterprise Overview</h1>
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Enterprise Overview</h1>
                     <p className="text-slate-500 font-medium mt-1">Monitor real-time context isolation and privacy shields.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
                   {stats.map((stat, i) => (
-                    <div key={i} className="group bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                      <div className="flex justify-between items-start mb-4">
-                        <div className={`p-3 rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
+                    <div key={i} className="group bg-white p-4 sm:p-6 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                      <div className="flex justify-between items-start mb-3 sm:mb-4">
+                        <div className={`p-2.5 sm:p-3 rounded-lg sm:rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                           <stat.icon size={22} strokeWidth={2.5} />
                         </div>
                         <div className={`flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full ${stat.type === 'positive' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-500'}`}>
@@ -330,8 +340,8 @@ const Dashboard = () => {
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
-                        <p className="text-3xl font-black text-slate-900 leading-none">{stat.value}</p>
+                        <p className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-widest leading-none">{stat.label}</p>
+                        <p className="text-2xl sm:text-3xl font-black text-slate-900 leading-none">{stat.value}</p>
                       </div>
                       <div className="mt-4 pt-4 border-t border-slate-50 flex items-center justify-between">
                          
@@ -343,14 +353,14 @@ const Dashboard = () => {
                   ))}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2 relative group overflow-hidden bg-white rounded-[2.5rem] p-10 border border-slate-200 shadow-xl shadow-slate-200/40">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+                  <div className="lg:col-span-2 relative group overflow-hidden bg-white rounded-2xl sm:rounded-[2.5rem] p-6 sm:p-8 lg:p-10 border border-slate-200 shadow-xl shadow-slate-200/40">
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-gradient-to-br from-indigo-50/50 to-transparent rounded-full -mr-40 -mt-40 z-0 opacity-80 group-hover:scale-110 transition-transform duration-1000"></div>
                   
                     <div className="relative z-10 flex flex-col md:flex-row justify-between h-full gap-8">
                       <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-6">
-                          <span className="px-4 py-1.5 bg-slate-900 text-white text-[11px] font-black rounded-full uppercase tracking-widest shadow-lg shadow-slate-200">
+                        <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-6">
+                          <span className="px-3 sm:px-4 py-1 sm:py-1.5 bg-slate-900 text-white text-[10px] sm:text-[11px] font-black rounded-full uppercase tracking-widest shadow-lg shadow-slate-200">
                             {loading ? 'Loading...' : 'Current Active Profile'}
                           </span>
                           <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-600 text-[11px] font-bold rounded-full border border-emerald-100/50">
@@ -358,7 +368,7 @@ const Dashboard = () => {
                           </div>
                         </div>
                       
-                        <h2 className="text-4xl font-black text-slate-900 mb-4 tracking-tight leading-tight">
+                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 mb-3 sm:mb-4 tracking-tight leading-tight">
                           {loading ? (
                             <div className="flex items-center gap-3">
                               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
@@ -377,7 +387,7 @@ const Dashboard = () => {
                           )}
                         </h2>
                         
-                        <p className="text-slate-500 text-lg mb-8 max-w-lg leading-relaxed font-medium italic">
+                        <p className="text-slate-500 text-base sm:text-lg mb-6 sm:mb-8 max-w-lg leading-relaxed font-medium italic">
                           {loading ? (
                             '"Analyzing your interaction patterns..."'
                           ) : profileData ? (
@@ -387,11 +397,11 @@ const Dashboard = () => {
                           )}
                         </p>
                       
-                        <div className="flex flex-wrap gap-4">
+                        <div className="flex flex-wrap gap-3 sm:gap-4">
                           <button 
                             onClick={runProfileAnalysis}
                             disabled={analyzing}
-                            className={`px-8 py-3.5 rounded-2xl text-sm font-bold shadow-xl transition-all duration-300 flex items-center gap-2 ${
+                            className={`px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-xl transition-all duration-300 flex items-center gap-2 ${
                               analyzing 
                                 ? 'bg-slate-400 cursor-not-allowed' 
                                 : analysisSuccess
@@ -418,20 +428,20 @@ const Dashboard = () => {
                           </button>
                           <button 
                             onClick={() => setCurrentPage('insights')} 
-                            className="bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-sm font-bold shadow-xl shadow-indigo-100 hover:shadow-2xl hover:bg-indigo-700 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
+                            className="bg-indigo-600 text-white px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold shadow-xl shadow-indigo-100 hover:shadow-2xl hover:bg-indigo-700 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
                           >
                             View Profile <ChevronRight size={18} strokeWidth={2.5} />
                           </button>
                           <button 
                             onClick={() => setCurrentPage('library')}
-                            className="px-8 py-3.5 rounded-2xl text-sm font-bold text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all duration-300 flex items-center gap-2"
+                            className="px-6 sm:px-8 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-50 border border-slate-200 transition-all duration-300 flex items-center gap-2"
                           >
                             View Library <Layers size={16} strokeWidth={2.5} />
                           </button>
                         </div>
                       </div>
                       
-                      <div className="flex flex-col items-center justify-center min-w-[200px] space-y-3">
+                      <div className="flex lg:flex-col items-center justify-around lg:justify-center gap-3 mt-6 lg:mt-0 min-w-full lg:min-w-[200px]">
                         {loading ? (
                           <div className="w-40 h-40 flex items-center justify-center">
                             <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
@@ -490,22 +500,23 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-[2.5rem] p-10 text-white shadow-2xl shadow-indigo-200 flex flex-col justify-between relative overflow-hidden group">
+                  <div className="bg-gradient-to-br from-indigo-600 to-indigo-900 rounded-2xl sm:rounded-[2.5rem] p-6 sm:p-8 lg:p-10 text-white shadow-2xl shadow-indigo-200 flex flex-col justify-between relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-125 transition-transform duration-700">
                       <Database size={180} strokeWidth={1} />
                     </div>
                   
                     <div>
-                      <div className="flex justify-between items-start mb-8">
-                        <div className="w-14 h-14 bg-white/15 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl group-hover:rotate-12 transition-transform">
-                          <Lock size={28} className="text-white"/>
+                      <div className="flex justify-between items-start mb-6 sm:mb-8">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/15 rounded-xl sm:rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl group-hover:rotate-12 transition-transform">
+                          <Lock size={24} className="sm:hidden text-white"/>
+                          <Lock size={28} className="hidden sm:block text-white"/>
                         </div>
                         <div className="flex flex-col items-end">
                           <span className="text-[10px] font-black text-indigo-200 uppercase tracking-[0.2em]">Vault Status</span>
-                          <span className="text-4xl font-black mt-1 tracking-tighter">SECURED</span>
+                          <span className="text-2xl sm:text-3xl lg:text-4xl font-black mt-1 tracking-tighter">SECURED</span>
                         </div>
                       </div>
-                      <h3 className="font-black text-2xl tracking-tight mb-2">Isolation Matrix</h3>
+                      <h3 className="font-black text-xl sm:text-2xl tracking-tight mb-2">Isolation Matrix</h3>
                       <p className="text-indigo-100/70 text-sm font-medium leading-relaxed">
                         Personal and business data are currently split into 4 isolated context containers.
                       </p>
@@ -525,19 +536,19 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-black flex items-center gap-3">
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                    <h3 className="text-lg sm:text-xl font-black flex items-center gap-2 sm:gap-3">
                       <Wifi size={22} className="text-indigo-500" /> Active AI Interfaces
                     </h3>
                     <button className="text-xs font-bold text-indigo-600 hover:bg-indigo-50 px-3 py-1.5 rounded-lg transition-colors">Manage All Connections</button>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                       {tools.map((tool) => (
-                        <div key={tool.id} className="group bg-white p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all">
-                          <div className="flex justify-between items-start mb-5">
-                            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-500 ${tool.connected ? 'bg-indigo-50 border-indigo-100 text-indigo-600 scale-100 shadow-lg shadow-indigo-50' : 'bg-slate-50 border-slate-100 text-slate-300 scale-95 opacity-50'}`}>
+                        <div key={tool.id} className="group bg-white p-4 sm:p-6 rounded-2xl sm:rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl hover:border-indigo-100 transition-all">
+                          <div className="flex justify-between items-start mb-4 sm:mb-5">
+                            <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 transition-all duration-500 ${tool.connected ? 'bg-indigo-50 border-indigo-100 text-indigo-600 scale-100 shadow-lg shadow-indigo-50' : 'bg-slate-50 border-slate-100 text-slate-300 scale-95 opacity-50'}`}>
                               {tool.icon === 'zap' && <Zap size={28} strokeWidth={2.5} />}
                               {tool.icon === 'brain' && <BrainCircuit size={28} strokeWidth={2.5} />}
                               {tool.icon === 'sparkles' && <Sparkles size={28} strokeWidth={2.5} />}
@@ -567,9 +578,10 @@ const Dashboard = () => {
                         </div>
                       ))}
                     
-                    <button className="border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-8 text-slate-400 hover:bg-slate-50 hover:border-indigo-300 hover:text-indigo-600 transition-all gap-4 min-h-[180px] group">
-                      <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
-                        <ExternalLink size={24} />
+                    <button className="border-2 border-dashed border-slate-200 rounded-2xl sm:rounded-3xl flex flex-col items-center justify-center p-6 sm:p-8 text-slate-400 hover:bg-slate-50 hover:border-indigo-300 hover:text-indigo-600 transition-all gap-3 sm:gap-4 min-h-[160px] sm:min-h-[180px] group">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-100 rounded-xl sm:rounded-2xl flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
+                        <ExternalLink size={20} className="sm:hidden" />
+                        <ExternalLink size={24} className="hidden sm:block" />
                       </div>
                       <span className="text-sm font-black uppercase tracking-[0.2em]">Add New Interface</span>
                     </button>
