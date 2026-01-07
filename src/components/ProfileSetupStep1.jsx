@@ -84,7 +84,7 @@ const ProfileSetupStep1 = () => {
             Personalize<br />Your AI<br />Experience
           </h1>
           <p className="text-lg lg:text-xl text-indigo-100 font-medium max-w-lg">
-            Tell us how you use AI — we’ll tailor responses, tone, and depth from day one.
+            Tell us how you use AI — we'll tailor responses, tone, and depth from day one.
           </p>
         </div>
       </div>
@@ -112,7 +112,6 @@ const ProfileSetupStep1 = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {intentOptions.map((opt) => {
                   const isSelected = selectedIntents.includes(opt.code);
-                  const selectionOrder = selectedIntents.indexOf(opt.code);
                   const isDisabled = !isSelected && selectedIntents.length >= 3;
                   
                   return (
@@ -138,25 +137,10 @@ const ProfileSetupStep1 = () => {
                         {opt.icon}
                       </div>
                       <span className="font-semibold text-sm text-left flex-1">{opt.label}</span>
-                      {isSelected && (
-                        <div className="w-8 h-8 bg-indigo-600 rounded-full flex items-center justify-center text-white text-sm font-black shadow-lg">
-                          {selectionOrder + 1}
-                        </div>
-                      )}
                     </button>
                   );
                 })}
               </div>
-              {selectedIntents.length > 0 && (
-                <div className="mt-4 p-3 bg-blue-50 rounded-xl">
-                  <p className="text-xs font-bold text-blue-700">
-                    Selected order: {selectedIntents.map((code, idx) => {
-                      const opt = intentOptions.find(o => o.code === code);
-                      return `${idx + 1}. ${opt?.label}`;
-                    }).join(' → ')}
-                  </p>
-                </div>
-              )}
             </div>
 
             <div className="mt-12 flex justify-center">

@@ -212,7 +212,6 @@ const ProfileSetupStep2 = () => {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {interestOptions.map((opt) => {
                   const isSelected = selectedInterests.includes(opt.code);
-                  const selectionOrder = selectedInterests.indexOf(opt.code);
                   const isDisabled = !isSelected && selectedInterests.length >= 4;
                   
                   return (
@@ -228,11 +227,6 @@ const ProfileSetupStep2 = () => {
                           : 'border-slate-200 bg-white hover:border-slate-300'
                       }`}
                     >
-                      {isSelected && (
-                        <div className="absolute -top-2 -right-2 w-7 h-7 bg-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-black shadow-lg z-10">
-                          {selectionOrder + 1}
-                        </div>
-                      )}
                       <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
                         isSelected 
                           ? 'bg-emerald-200 text-emerald-700' 
@@ -247,16 +241,6 @@ const ProfileSetupStep2 = () => {
                   );
                 })}
               </div>
-              {selectedInterests.length > 0 && (
-                <div className="mt-4 p-3 bg-emerald-50 rounded-xl">
-                  <p className="text-xs font-bold text-emerald-700">
-                    Selected order: {selectedInterests.map((code, idx) => {
-                      const opt = interestOptions.find(o => o.code === code);
-                      return `${idx + 1}. ${opt?.label}`;
-                    }).join(' → ')}
-                  </p>
-                </div>
-              )}
             </div>
 
             <div className="text-center">

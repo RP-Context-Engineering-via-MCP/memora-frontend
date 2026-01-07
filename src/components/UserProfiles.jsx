@@ -191,7 +191,8 @@ const UserProfiles = () => {
       await fetchUserProfiles(userId);
       
       // Show success message (you can enhance this with a toast notification)
-      alert(`Profile assigned successfully! New profile: ${result.assigned_profile_id || 'Updated'}`);
+      // Removed blocking alert to improve UX; consider adding a toast notification here
+      console.log(`Profile assigned successfully. New profile: ${result.assigned_profile_id || 'Updated'}`);
     } catch (err) {
       console.error('Error assigning profile:', err);
       setJsonError(err.message || 'Failed to assign profile');
@@ -712,7 +713,7 @@ const UserProfiles = () => {
               ) : (
                 <>
                   <CheckCircle size={20} />
-                  Assign Profile
+                  Enter behavioural data
                 </>
               )}
             </button>
