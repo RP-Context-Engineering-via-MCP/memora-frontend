@@ -283,8 +283,3 @@ graph LR
   <p>Built with ❤️ using React, Vite, and Tailwind CSS</p>
   <p>© 2026 Memora - All Rights Reserved</p>
 </div>
-- **Tailwind CSS** - Styling
-- **@react-oauth/google** - Google OAuth
-- **Lucide React** - Icons
-- **Framer Motion** - Animations
-- **Recharts** - Data visualization
