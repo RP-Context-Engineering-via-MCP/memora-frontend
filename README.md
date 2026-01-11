@@ -7,7 +7,6 @@
   ![React](https://img.shields.io/badge/React-19.2.0-blue?logo=react)
   ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
   ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4.19-38B2AC?logo=tailwind-css)
-  ![License](https://img.shields.io/badge/License-MIT-green)
 </div>
 
 ---
