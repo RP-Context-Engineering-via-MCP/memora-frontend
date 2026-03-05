@@ -7,7 +7,6 @@
   ![React](https://img.shields.io/badge/React-19.2.0-blue?logo=react)
   ![Vite](https://img.shields.io/badge/Vite-7.2.4-646CFF?logo=vite)
   ![TailwindCSS](https://img.shields.io/badge/Tailwind-3.4.19-38B2AC?logo=tailwind-css)
-  ![License](https://img.shields.io/badge/License-MIT-green)
 </div>
 
 ---
@@ -275,82 +274,11 @@ graph LR
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/AmazingFeature`)
-3. **Commit your changes** (`git commit -m 'Add some AmazingFeature'`)
-4. **Push to the branch** (`git push origin feature/AmazingFeature`)
-5. **Open a Pull Request**
-
-### Code Style Guidelines
-- Follow ESLint configuration
-- Use functional components with hooks
-- Maintain Tailwind CSS utility classes
-- Write descriptive commit messages
-
----
-
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
 ## 📧 Contact & Support
-
-**Project**: SLIIT Research Implementation  
-**Repository**: Memora Frontend
-
-For questions, issues, or feature requests, please open an issue on GitHub.
-
----
 
 <div align="center">
   <p>Built with ❤️ using React, Vite, and Tailwind CSS</p>
   <p>© 2026 Memora - All Rights Reserved</p>
 </div>
-- **Tailwind CSS** - Styling
-- **@react-oauth/google** - Google OAuth
-- **Lucide React** - Icons
-- **Framer Motion** - Animations
-- **Recharts** - Data visualization
-
-## Documentation
-
-- [QUICKSTART.md](QUICKSTART.md) - Get started in 5 minutes
-- [OAUTH_SETUP.md](OAUTH_SETUP.md) - Complete OAuth setup guide
-- [OAUTH_BACKEND_SPEC.md](OAUTH_BACKEND_SPEC.md) - Backend API requirements
-- [OAUTH_IMPLEMENTATION_SUMMARY.md](OAUTH_IMPLEMENTATION_SUMMARY.md) - Implementation details
-
-## Development
-
-### React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-## Security
-
-- OAuth Client Secret is never exposed in frontend
-- JWT tokens used for API authentication
-- User data stored in localStorage/sessionStorage
-- HTTPS required for production OAuth
-
-## License
-
-© 2025 Memora Inc.
