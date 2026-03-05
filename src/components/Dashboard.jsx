@@ -27,13 +27,15 @@ import {
   Loader2,
   Check,
   User,
-  LogOut
+  LogOut,
+  TrendingUp
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import ProfileInsights from './ProfileInsights';
 import SessionManagement from './SessionManagement';
 import ContextLibraryPage from './ContextLibrary';
 import UserProfiles from './UserProfiles';
+import DriftDashboard from './DriftDashboard';
 import { API_ENDPOINTS } from '../config/api';
 
 const chartData = [
@@ -218,6 +220,7 @@ const Dashboard = () => {
             </div>
             <nav className="space-y-1.5">
               <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active={currentPage === 'dashboard'} onClick={() => { setCurrentPage('dashboard'); setActiveModal(null); }} />
+              <NavItem icon={<TrendingUp size={20} />} label="Drift Analysis" active={currentPage === 'drift'} onClick={() => { setCurrentPage('drift'); setActiveModal(null); }} />
               <NavItem icon={<Layers size={20} />} label="Behavior Library" active={currentPage === 'library'} onClick={() => { setCurrentPage('library'); setActiveModal(null); }} />
               <NavItem icon={<BrainCircuit size={20} />} label="Profile Insights" active={currentPage === 'insights'} onClick={() => { setCurrentPage('insights'); setActiveModal(null); }} />
               <NavItem icon={<User size={20} />} label="User Profiles" active={currentPage === 'profiles'} onClick={() => { setCurrentPage('profiles'); setActiveModal(null); }} />
@@ -594,6 +597,10 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
+            )}
+
+            {currentPage === 'drift' && (
+              <DriftDashboard userId={sessionStorage.getItem('userId') || localStorage.getItem('userId') || 'user_123'} />
             )}
 
             {currentPage === 'library' && (

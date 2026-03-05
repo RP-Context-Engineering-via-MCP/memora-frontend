@@ -1,5 +1,5 @@
 // API configuration
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 export const API_VERSION = '/api/v1';
 
 export const API_ENDPOINTS = {
@@ -16,6 +16,13 @@ export const API_ENDPOINTS = {
   oauthLogin: `${API_BASE_URL}/api/users/oauth/login`,
   oauthSignup: `${API_BASE_URL}/api/users/oauth/signup`,
   githubCallback: `${API_BASE_URL}/api/users/oauth/github/callback`,
+  
+  // Drift Detection endpoints
+  getDriftDashboard: (userId, days = 90) => `${API_BASE_URL}${API_VERSION}/dashboard/${userId}?days=${days}`,
+  detectDrift: (userId, force = false) => `${API_BASE_URL}${API_VERSION}/detect/${userId}?force=${force}`,
+  getDriftEvents: (userId, limit = 50, offset = 0) => `${API_BASE_URL}${API_VERSION}/events/${userId}?limit=${limit}&offset=${offset}`,
+  getDriftEvent: (userId, driftEventId) => `${API_BASE_URL}${API_VERSION}/events/${userId}/${driftEventId}`,
+  acknowledgeDriftEvent: (userId, driftEventId) => `${API_BASE_URL}${API_VERSION}/events/${userId}/${driftEventId}/acknowledge`,
 };
 
 /**
