@@ -21,7 +21,7 @@ import {
   BookOpen
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'http://127.0.0.1:8002';
 
 const ProfileSetupStep2 = () => {
   const [step1Data, setStep1Data] = useState(null);
@@ -95,7 +95,7 @@ const ProfileSetupStep2 = () => {
       
       // Build the request payload matching the API structure
       const payload = {
-        behavior: {
+        extracted_behavior: {
           intents: scores.intents,
           interests: scores.interests,
           signals: {

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { GITHUB_CLIENT_ID, OAUTH_CONFIG } from '../config/oauth';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8080';
 
 const Signup = () => {
   const navigate = useNavigate();

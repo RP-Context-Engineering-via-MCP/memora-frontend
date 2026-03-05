@@ -21,7 +21,7 @@ import {
   Info
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'http://127.0.0.1:8002';
 
 const UserProfiles = () => {
   const [profileData, setProfileData] = useState(null);
@@ -152,14 +152,14 @@ const UserProfiles = () => {
       }
 
       // Validate required fields
-      if (!behaviorData.behavior) {
-        setJsonError('JSON must contain "behavior" field.');
+      if (!behaviorData.extracted_behavior) {
+        setJsonError('JSON must contain "extracted_behavior" field.');
         return;
       }
 
-      // Validate behavior is either object or array
-      if (typeof behaviorData.behavior !== 'object') {
-        setJsonError('"behavior" field must be an object or an array.');
+      // Validate extracted_behavior is either object or array
+      if (typeof behaviorData.extracted_behavior !== 'object') {
+        setJsonError('"extracted_behavior" field must be an object or an array.');
         return;
       }
 
@@ -676,12 +676,12 @@ const UserProfiles = () => {
                 setJsonInput(e.target.value);
                 setJsonError('');
               }}
-              placeholder='{\n  "behavior": {\n    "intents": { "PROBLEM_SOLVING": 0.93 },\n    "interests": { "PROGRAMMING": 0.86, "AI": 0.82 },\n    "signals": { "MULTI_STEP": 0.86, "ITERATIVE": 0.72 },\n    "behavior_level": "ADVANCED",\n    "consistency": 0.65,\n    "complexity": 0.64\n  }\n}'
+              placeholder='{\n  "extracted_behavior": {\n    "intents": { "PROBLEM_SOLVING": 0.9 },\n    "interests": { "PROGRAMMING": 0.85, "AI": 0.8 },\n    "signals": { "MULTI_STEP": 0.8, "ITERATIVE": 0.6 },\n    "behavior_level": "ADVANCED",\n    "consistency": 0.5,\n    "complexity": 0.6\n  }\n}'
               className="w-full h-64 px-4 py-3 border-2 border-slate-300 rounded-xl font-mono text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all resize-none"
               disabled={assigning}
             />
             <p className="text-xs text-slate-500 mt-2">
-              Paste your behavior JSON data. Supports single behavior object or array of behaviors. Do not include user_id field.
+              Paste your extracted_behavior JSON data. Supports single behavior object or array of behaviors. Do not include user_id field.
             </p>
           </div>
 
