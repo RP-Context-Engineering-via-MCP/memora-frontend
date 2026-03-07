@@ -1,5 +1,6 @@
 // API configuration
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+export const SESSION_API_URL = import.meta.env.VITE_SESSION_API_URL || 'http://localhost:8080';
 export const API_VERSION = '/api/v1';
 
 export const API_ENDPOINTS = {
@@ -17,6 +18,16 @@ export const API_ENDPOINTS = {
   oauthSignup: `${API_BASE_URL}/api/users/oauth/signup`,
   githubCallback: `${API_BASE_URL}/api/users/oauth/github/callback`,
   
+  // Session endpoints (port 8080)
+  listSessions: (userId, page = 1, pageSize = 20) =>
+    `${SESSION_API_URL}/api/users/${userId}/sessions/?page=${page}&page_size=${pageSize}`,
+  createSession: (userId) => `${SESSION_API_URL}/api/users/${userId}/sessions/`,
+  getSession: (userId, sessionId) => `${SESSION_API_URL}/api/users/${userId}/sessions/${sessionId}`,
+  updateSession: (userId, sessionId) => `${SESSION_API_URL}/api/users/${userId}/sessions/${sessionId}`,
+  deleteSession: (userId, sessionId) => `${SESSION_API_URL}/api/users/${userId}/sessions/${sessionId}`,
+  getActiveSession: (userId) => `${SESSION_API_URL}/api/users/${userId}/current-session`,
+  updateActiveSession: (userId) => `${SESSION_API_URL}/api/users/${userId}/active-session`,
+
   // Drift Detection endpoints
   getDriftDashboard: (userId, days = 90) => `${API_BASE_URL}${API_VERSION}/dashboard/${userId}?days=${days}`,
   detectDrift: (userId, force = false) => `${API_BASE_URL}${API_VERSION}/detect/${userId}?force=${force}`,

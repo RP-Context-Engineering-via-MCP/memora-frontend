@@ -32,6 +32,8 @@ const DriftDashboard = ({ userId = 'user_123' }) => {
   const [timeRange, setTimeRange] = useState(90);
   const [filterType, setFilterType] = useState('all');
   const [filterSeverity, setFilterSeverity] = useState('all');
+  const [detecting, setDetecting] = useState(false);
+  const [detectError, setDetectError] = useState(null);
 
   useEffect(() => {
     loadDashboard();
@@ -49,6 +51,26 @@ const DriftDashboard = ({ userId = 'user_123' }) => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runDetection = async () => {
+    setDetecting(true);
+    setDetectError(null);
+    try {
+      const response = await fetch(API_ENDPOINTS.detectDrift(userId, false), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) throw new Error('Failed to run drift detection');
+      // Refresh dashboard after successful detection
+      await loadDashboard();
+    } catch (err) {
+      setDetectError(err.message);
+    } finally {
+      setDetecting(false);
     }
   };
 
@@ -174,6 +196,16 @@ const DriftDashboard = ({ userId = 'user_123' }) => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-lg p-8"
         >
+          {/* Detection Error Banner */}
+          {detectError && (
+            <div className="mb-4 flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 text-sm font-medium rounded-xl px-4 py-3">
+              <AlertCircle size={16} className="flex-shrink-0" />
+              {detectError}
+              <button onClick={() => setDetectError(null)} className="ml-auto">
+                <X size={14} />
+              </button>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
@@ -196,10 +228,21 @@ const DriftDashboard = ({ userId = 'user_123' }) => {
                 <option value={365}>Last year</option>
               </select>
               <button
-                onClick={loadDashboard}
-                className="p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors"
+                onClick={runDetection}
+                disabled={detecting}
+                className="px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Run drift detection"
               >
-                <RefreshCw className="w-5 h-5" />
+                <Zap className={`w-5 h-5 ${detecting ? 'animate-pulse' : ''}`} />
+                {detecting ? 'Detecting...' : 'Run Detection'}
+              </button>
+              <button
+                onClick={loadDashboard}
+                disabled={loading}
+                className="p-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                title="Refresh dashboard"
+              >
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
               </button>
             </div>
           </div>
