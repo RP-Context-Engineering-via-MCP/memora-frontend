@@ -18,6 +18,9 @@ export const API_ENDPOINTS = {
   oauthSignup: `${API_BASE_URL}/api/users/oauth/signup`,
   githubCallback: `${API_BASE_URL}/api/users/oauth/github/callback`,
   
+  // MCP Token endpoint
+  generateMcpToken: (userId) => `${API_BASE_URL}/api/users/${userId}/mcp-token`,
+  
   // Session endpoints (port 8080)
   listSessions: (userId, page = 1, pageSize = 20) =>
     `${SESSION_API_URL}/api/users/${userId}/sessions/?page=${page}&page_size=${pageSize}`,

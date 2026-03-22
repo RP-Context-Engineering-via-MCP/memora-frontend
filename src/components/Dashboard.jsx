@@ -36,6 +36,7 @@ import SessionManagement from './SessionManagement';
 import ContextLibraryPage from './ContextLibrary';
 import UserProfiles from './UserProfiles';
 import DriftDashboard from './DriftDashboard';
+import MCPAccessTokenModal from './MCPAccessTokenModal';
 import { API_ENDPOINTS } from '../config/api';
 
 const chartData = [
@@ -59,6 +60,7 @@ const Dashboard = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisSuccess, setAnalysisSuccess] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [tools, setTools] = useState([
     { id: 1, name: 'ChatGPT Plus', connected: true, lastSync: '2m ago', usage: 'High', icon: 'zap' },
     { id: 2, name: 'Claude 3.5 Sonnet', connected: true, lastSync: '1h ago', usage: 'Medium', icon: 'brain' },
@@ -306,6 +308,16 @@ const Dashboard = () => {
                {/* Profile Dropdown Menu */}
                {showProfileMenu && (
                  <div className="absolute top-full right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50">
+                   <button
+                     onClick={() => {
+                       setShowProfileMenu(false);
+                       setIsTokenModalOpen(true);
+                     }}
+                     className="w-full px-4 py-2.5 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 flex items-center gap-2 transition-colors border-b border-slate-100"
+                   >
+                     <ShieldCheck size={16} />
+                     MCP Access Token
+                   </button>
                    <button
                      onClick={() => {
                        setShowProfileMenu(false);
@@ -622,7 +634,8 @@ const Dashboard = () => {
         </div>
       </main>
 
-      {/* Modals (keep for other features) */}
+      {/* Modals and Overlays */}
+      <MCPAccessTokenModal isOpen={isTokenModalOpen} onClose={() => setIsTokenModalOpen(false)} />
     </div>
   );
 };
