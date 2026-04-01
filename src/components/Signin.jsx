@@ -14,7 +14,7 @@ import {
 import { handleOAuthLogin } from '../config/api';
 import { GITHUB_CLIENT_ID, OAUTH_CONFIG } from '../config/oauth';
 
-const API_BASE_URL = 'http://127.0.0.1:8080';
+const API_BASE_URL = 'http://localhost:8000';
 
 const Signin = () => {
   const navigate = useNavigate();
