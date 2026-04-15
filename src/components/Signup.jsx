@@ -1,6 +1,6 @@
-// src/components/Signup.jsx
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import {
   ShieldCheck,
   ArrowRight,
@@ -9,39 +9,282 @@ import {
   Bot,
   Sparkles,
   Lock,
+  AlertCircle,
+  CheckCircle,
 } from 'lucide-react';
+import { GITHUB_CLIENT_ID, OAUTH_CONFIG } from '../config/oauth';
+
+const API_BASE_URL = 'http://localhost:8000';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const hasProcessedCallback = useRef(false);
 
-  const handleSignUp = () => {
-    // After signup, go directly to profile setup
-    navigate('/profile-setup/step1');
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    setError('');
   };
 
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleSignUp = async () => {
+    if (!formData.username || !formData.email || !formData.password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    if (!validateEmail(formData.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      // Match the exact schema expected by UserCreateRequest
+      const requestBody = {
+        username: formData.username.trim(),
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password
+      };
+
+      console.log('Sending registration request:', requestBody);
+
+      const response = await fetch(`${API_BASE_URL}/api/users/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+      console.log('Registration response:', response.status, data);
+
+      if (!response.ok) {
+        // Log detailed validation errors
+        if (data.detail && Array.isArray(data.detail)) {
+          console.error('Validation errors:', data.detail);
+          const errorMessages = data.detail.map(err => {
+            const location = err.loc ? err.loc.join('.') : 'unknown';
+            return `${location}: ${err.msg}`;
+          }).join(', ');
+          throw new Error(errorMessages);
+        }
+        throw new Error(data.detail || 'Registration failed');
+      }
+
+      // Save to both localStorage and sessionStorage for persistence and session management
+      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('user', JSON.stringify(data));
+
+      navigate('/profile-setup/step1');
+    } catch (err) {
+      console.error('Signup error:', err);
+      setError(err.message || 'Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSignUp();
+    }
+  };
+
+  // OAuth Google Login Handler (same as Signin)
+  const handleGoogleOAuthSuccess = async (tokenResponse) => {
+    setLoading(true);
+    setError('');
+
+    try {
+      // First, get user info from Google
+      const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: {
+          Authorization: `Bearer ${tokenResponse.access_token}`,
+        },
+      });
+
+      if (!userInfoResponse.ok) {
+        throw new Error('Failed to get user information from Google');
+      }
+
+      const googleUserInfo = await userInfoResponse.json();
+
+      // Send to backend to check if user exists or create new user
+      const backendResponse = await fetch(`${API_BASE_URL}/api/users/oauth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: googleUserInfo.email,
+          name: googleUserInfo.name,
+          provider: 'google',
+          provider_id: googleUserInfo.sub,
+          picture: googleUserInfo.picture,
+        }),
+      });
+
+      const data = await backendResponse.json();
+
+      if (!backendResponse.ok) {
+        throw new Error(data.detail || 'OAuth authentication failed');
+      }
+
+      // Save user data to storage
+      localStorage.setItem('user', JSON.stringify(data));
+      localStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('userId', data.user_id);
+      sessionStorage.setItem('user', JSON.stringify(data));
+
+      // Navigate based on whether user is new or existing
+      if (data.is_new_user) {
+        // New user - navigate to onboarding
+        navigate('/profile-setup/step1');
+      } else {
+        // Existing user - navigate to dashboard
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      console.error('OAuth error:', err);
+      setError(err.message || 'Failed to sign up with Google. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleOAuthError = (error) => {
+    console.error('Google OAuth error:', error);
+    setError('Failed to authenticate with Google. Please try again.');
+  };
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: handleGoogleOAuthSuccess,
+    onError: handleGoogleOAuthError,
+    flow: 'implicit',
+  });
+
+  // GitHub OAuth Login Handler
+  const handleGitHubLogin = () => {
+    if (!GITHUB_CLIENT_ID) {
+      setError('GitHub OAuth is not configured. Please add VITE_GITHUB_CLIENT_ID to .env');
+      return;
+    }
+
+    const githubAuthUrl = new URL(OAUTH_CONFIG.github.authorizationUrl);
+    githubAuthUrl.searchParams.append('client_id', GITHUB_CLIENT_ID);
+    githubAuthUrl.searchParams.append('redirect_uri', OAUTH_CONFIG.github.redirectUri);
+    githubAuthUrl.searchParams.append('scope', OAUTH_CONFIG.github.scope);
+    githubAuthUrl.searchParams.append('state', Math.random().toString(36).substring(7));
+
+    // Redirect to GitHub OAuth
+    window.location.href = githubAuthUrl.toString();
+  };
+
+  // Handle GitHub OAuth callback
+  useEffect(() => {
+    const handleGitHubCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const state = urlParams.get('state');
+
+      // Only process if we have both code and state, and haven't processed yet
+      if (code && state && !hasProcessedCallback.current) {
+        hasProcessedCallback.current = true;
+        setLoading(true);
+        setError('');
+
+        try {
+          // Send code to backend for exchange
+          const backendResponse = await fetch(`${API_BASE_URL}/api/users/oauth/github/callback`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              code: code,
+              redirect_uri: OAUTH_CONFIG.github.redirectUri,
+            }),
+          });
+
+          const data = await backendResponse.json();
+
+          if (!backendResponse.ok) {
+            throw new Error(data.detail || 'GitHub OAuth authentication failed');
+          }
+
+          // Save user data to storage
+          localStorage.setItem('user', JSON.stringify(data));
+          localStorage.setItem('userId', data.user_id);
+          sessionStorage.setItem('userId', data.user_id);
+          sessionStorage.setItem('user', JSON.stringify(data));
+
+          // Clean up URL before navigation
+          window.history.replaceState({}, document.title, '/signup');
+
+          // Navigate based on whether user is new or existing
+          if (data.is_new_user) {
+            navigate('/profile-setup/step1');
+          } else {
+            navigate('/dashboard');
+          }
+        } catch (err) {
+          console.error('GitHub OAuth error:', err);
+          setError(err.message || 'Failed to sign up with GitHub. Please try again.');
+          // Clean up URL on error
+          window.history.replaceState({}, document.title, '/signup');
+          setLoading(false);
+        }
+      }
+    };
+
+    handleGitHubCallback();
+  }, []); // Empty dependency array - only run once on mount
+
   return (
-    <div className="min-h-screen flex font-sans">
-      {/* Left Hero - Same as Sign In */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-r-[3rem] shadow-2xl">
+    <div className="min-h-screen flex flex-col lg:flex-row font-sans">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-slate-900 via-indigo-900/90 to-slate-900 text-white relative overflow-hidden rounded-none lg:rounded-r-[3rem] shadow-2xl">
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
         
-        <div className="relative z-10 flex flex-col justify-between h-full p-16">
+        <div className="relative z-10 flex flex-col justify-between h-full p-8 lg:p-16">
           <div>
-            <p className="text-indigo-200 text-lg font-medium mb-12 leading-relaxed">
+            <p className="text-indigo-200 text-base lg:text-lg font-medium mb-8 lg:mb-12 leading-relaxed">
               One secure hub to control how every AI sees and remembers you.
             </p>
             
-            <h1 className="text-6xl font-black tracking-tight leading-tight mb-8">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight mb-6 lg:mb-8">
               Control<br />Your AI<br />Context
             </h1>
 
-            <p className="text-xl text-indigo-100 font-medium max-w-lg">
+            <p className="text-lg lg:text-xl text-indigo-100 font-medium max-w-lg">
               Manage your preferences across every AI — keep personal data private, align tone and expertise, and stay in full control.
             </p>
           </div>
           
-          {/* Same AI Chat Phone Mockup */}
-          <div className="relative max-w-md mx-auto">
+          <div className="relative max-w-md mx-auto hidden lg:block">
             <div className="bg-slate-800 rounded-[3rem] p-8 shadow-2xl border border-slate-700">
               <div className="bg-white rounded-[2rem] overflow-hidden shadow-inner">
                 <div className="bg-gradient-to-b from-indigo-50 to-slate-50 h-96 flex flex-col">
@@ -101,28 +344,37 @@ const Signup = () => {
         </div>
       </div>
 
-      {/* Right Form - Signup Version */}
-      <div className="flex-1 flex items-center justify-center bg-slate-50 px-8">
+      <div className="flex-1 flex items-center justify-center bg-slate-50 px-4 sm:px-6 lg:px-8 py-8 lg:py-0">
         <div className="w-full max-w-md">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-3 mb-8">
-              <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
-                <ShieldCheck size={28} strokeWidth={2.5} />
+          <div className="text-center mb-8 lg:mb-12">
+            <div className="inline-flex items-center gap-2 sm:gap-3 mb-6 lg:mb-8">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-white shadow-xl">
+                <ShieldCheck size={24} className="sm:hidden" strokeWidth={2.5} />
+                <ShieldCheck size={28} className="hidden sm:block" strokeWidth={2.5} />
               </div>
-              <span className="font-extrabold text-3xl tracking-tight text-slate-900">
+              <span className="font-extrabold text-2xl sm:text-3xl tracking-tight text-slate-900">
                 Memora
               </span>
             </div>
-            <h2 className="text-4xl font-black text-slate-900 mb-4">Create Account</h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 mb-3 sm:mb-4">Create Account</h2>
           </div>
 
-          <div className="bg-white rounded-[3rem] p-12 shadow-2xl border border-slate-100">
-            {/* OAuth Buttons */}
-            <div className="space-y-4 mb-10">
-              <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition">
+          <div className="bg-white rounded-2xl sm:rounded-[3rem] p-6 sm:p-8 lg:p-12 shadow-2xl border border-slate-100">
+            <div className="space-y-3 sm:space-y-4 mb-8 lg:mb-10">
+              <button 
+                type="button"
+                onClick={() => googleLogin()}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-2 sm:gap-3 py-3 sm:py-4 border border-slate-200 rounded-full font-bold text-sm sm:text-base text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Chrome size={22} /> Continue with Google
               </button>
-              <button className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition">
+              <button 
+                type="button"
+                onClick={handleGitHubLogin}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 py-4 border border-slate-200 rounded-full font-bold text-slate-700 hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 <Github size={22} /> Continue with GitHub
               </button>
             </div>
@@ -136,23 +388,41 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Signup Form Fields */}
-            <form className="space-y-6">
+            {error && (
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-xl sm:rounded-2xl flex items-start gap-2 sm:gap-3">
+                <AlertCircle size={20} className="text-red-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-red-800">{error}</p>
+              </div>
+            )}
+
+            <div className="space-y-4 sm:space-y-6">
               <input
                 type="text"
-                placeholder="Full Name"
-                className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
+                name="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
+                placeholder="Username"
+                className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-transparent border border-slate-300 rounded-full text-base sm:text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
               />
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
                 placeholder="Email Address"
-                className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
+                className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-transparent border border-slate-300 rounded-full text-base sm:text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
               />
               <div className="relative">
                 <input
                   type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  onKeyPress={handleKeyPress}
                   placeholder="Password"
-                  className="w-full px-6 py-5 bg-transparent border border-slate-300 rounded-full text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
+                  className="w-full px-4 sm:px-6 py-4 sm:py-5 bg-transparent border border-slate-300 rounded-full text-base sm:text-lg focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition"
                 />
                 <Lock size={20} className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400" />
               </div>
@@ -160,14 +430,15 @@ const Signup = () => {
               <button
                 type="button"
                 onClick={handleSignUp}
-                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-3"
+                disabled={loading}
+                className="w-full py-4 sm:py-5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-base sm:text-lg font-black rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
-                Create Account
+                {loading ? 'Creating Account...' : 'Create Account'}
                 <ArrowRight size={24} strokeWidth={3} />
               </button>
-            </form>
+            </div>
 
-            <p className="text-center mt-10 text-sm text-slate-600">
+            <p className="text-center mt-8 lg:mt-10 text-sm text-slate-600">
               Already have an account?{' '}
               <a href="/signin" className="font-bold text-indigo-600 hover:underline">
                 Sign In
@@ -175,7 +446,7 @@ const Signup = () => {
             </p>
           </div>
 
-          <p className="text-center mt-12 text-xs text-slate-400">
+          <p className="text-center mt-8 lg:mt-12 text-xs text-slate-400">
             © 2005-2025 Memora Inc. • Contact Us • English ▼
           </p>
         </div>

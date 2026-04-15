@@ -103,11 +103,11 @@ const ContextLibraryPage = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Behavior Library</h1>
-        <p className="text-slate-500 font-medium mt-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Context Library</h1>
+        <p className="text-sm sm:text-base text-slate-500 font-medium mt-1">
           See a behavior that incorrectly describes you? You can remove it.
         </p>
       </div>
