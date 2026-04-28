@@ -2,6 +2,9 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 export const API_VERSION = '/api/v1';
 
+// CBIE Engine API (port 6009)
+export const CBIE_API_URL = import.meta.env.VITE_CBIE_API_URL || 'http://localhost:6009';
+
 export const API_ENDPOINTS = {
   getUserProfile: (userId) => `${API_BASE_URL}${API_VERSION}/get-user-profile/${userId}`,
   listCoreBehaviors: (userId) => `${API_BASE_URL}${API_VERSION}/list-core-behaviors/${userId}`,
@@ -11,6 +14,16 @@ export const API_ENDPOINTS = {
     return `${API_BASE_URL}${API_VERSION}/profile/${userId}/llm-context${queryParams ? '?' + queryParams : ''}`;
   },
   health: `${API_BASE_URL}${API_VERSION}/health`,
+
+  // CBIE Admin endpoints
+  cbieUserSummary: (userId) => `${CBIE_API_URL}/admin/users/${userId}`,
+  cbieCoreProfile: (userId) => `${CBIE_API_URL}/admin/users/${userId}/profile`,
+  cbieEmbeddingMap: (userId) => `${CBIE_API_URL}/admin/users/${userId}/embedding-map`,
+  cbieBehaviors: (userId, limit = 50, offset = 0) => `${CBIE_API_URL}/admin/users/${userId}/behaviors?limit=${limit}&offset=${offset}`,
+  cbieRunPipeline: (userId, forceFullRun = false) => `${CBIE_API_URL}/admin/users/${userId}/run_pipeline?force_full_run=${forceFullRun}`,
+  cbieJobStatus: (jobId) => `${CBIE_API_URL}/admin/jobs/${jobId}`,
+  cbieProfile: (userId) => `${CBIE_API_URL}/profiles/${userId}`,
+  cbieIdentityContext: (userId) => `${CBIE_API_URL}/context/${userId}`,
   
   // OAuth endpoints
   oauthLogin: `${API_BASE_URL}/api/users/oauth/login`,
