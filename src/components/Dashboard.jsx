@@ -55,10 +55,12 @@ const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState('dashboard');
   const [isSidebarOpen, setSidebarOpen] = useState(true);
   const [profileData, setProfileData] = useState(null);
+  const [cbieData, setCbieData] = useState(null);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisSuccess, setAnalysisSuccess] = useState(false);
+  const [pipelineJobId, setPipelineJobId] = useState(null);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isTokenModalOpen, setIsTokenModalOpen] = useState(false);
   const [tools, setTools] = useState([
@@ -111,20 +113,45 @@ const Dashboard = () => {
     }
   }, [currentPage]);
 
+  const getCbieUserId = () =>
+    import.meta.env.VITE_CBIE_USER_ID ||
+    sessionStorage.getItem('userId') ||
+    localStorage.getItem('userId');
+
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
       const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
-      if (!userId) {
-        console.error('No user ID found in session');
-        setLoading(false);
-        return;
+      const cbieUserId = getCbieUserId();
+
+      // Fetch from old API (fallback)
+      if (userId) {
+        try {
+          const response = await fetch(API_ENDPOINTS.getUserProfile(userId));
+          if (response.ok) setProfileData(await response.json());
+        } catch {}
       }
-      const response = await fetch(API_ENDPOINTS.getUserProfile(userId));
-      
-      if (response.ok) {
-        const data = await response.json();
-        setProfileData(data);
+
+      // Fetch from CBIE /profiles/{id}
+      if (cbieUserId) {
+        try {
+          const cbieRes = await fetch(API_ENDPOINTS.cbieProfile(cbieUserId));
+          if (cbieRes.ok) {
+            const data = await cbieRes.json();
+            const interests = data.confirmed_interests || [];
+            setCbieData({
+              total_raw_behaviors: data.total_raw_behaviors,
+              total_interests: interests.length,
+              stable_count: interests.filter(i => i.status === 'Stable').length,
+              emerging_count: interests.filter(i => i.status === 'Emerging').length,
+              fact_count: interests.filter(i => i.status === 'Stable Fact').length,
+              top_interest: interests.sort((a,b) => b.core_score - a.core_score)[0]?.representative_topics?.[0] || null,
+              last_updated: data.last_updated,
+            });
+          }
+        } catch (err) {
+          console.error('Error fetching CBIE data:', err);
+        }
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
@@ -137,51 +164,61 @@ const Dashboard = () => {
     try {
       setAnalyzing(true);
       setAnalysisSuccess(false);
-      const userId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
-      if (!userId) {
-        alert('No user ID found in session');
+      const cbieUserId = getCbieUserId();
+      if (!cbieUserId) {
+        alert('No user ID found');
         setAnalyzing(false);
         return;
       }
-      
-      const response = await fetch(API_ENDPOINTS.analyzeFromStorage(userId), {
-        method: 'POST',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to analyze profile');
-      }
-      
+
+      // Trigger CBIE pipeline
+      const response = await fetch(API_ENDPOINTS.cbieRunPipeline(cbieUserId), { method: 'POST' });
+      if (!response.ok) throw new Error('Failed to start CBIE pipeline');
       const data = await response.json();
-      console.log('Analysis complete:', data);
-      
-      // Show success message
-      setAnalysisSuccess(true);
-      setTimeout(() => setAnalysisSuccess(false), 3000);
-      
-      // Refresh dashboard after 1 second
-      setTimeout(() => {
-        fetchDashboardData();
-      }, 1000);
-      
+      setPipelineJobId(data.job_id);
     } catch (err) {
-      console.error('Error analyzing profile:', err);
-      alert('Failed to analyze profile: ' + err.message);
-    } finally {
+      console.error('Error starting analysis:', err);
+      alert('Failed to start analysis: ' + err.message);
       setAnalyzing(false);
     }
   };
+
+  // Poll CBIE pipeline job status
+  useEffect(() => {
+    if (!pipelineJobId) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(API_ENDPOINTS.cbieJobStatus(pipelineJobId));
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === 'COMPLETED') {
+          clearInterval(interval);
+          setPipelineJobId(null);
+          setAnalyzing(false);
+          setAnalysisSuccess(true);
+          setTimeout(() => setAnalysisSuccess(false), 3000);
+          fetchDashboardData();
+        } else if (data.status === 'FAILED') {
+          clearInterval(interval);
+          setPipelineJobId(null);
+          setAnalyzing(false);
+          alert('Pipeline failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch {}
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [pipelineJobId]);
 
   const toggleTool = useCallback((id) => {
     setTools(prev => prev.map(t => t.id === id ? { ...t, connected: !t.connected } : t));
   }, []);
 
-  // Calculate statistics from profile data
-  const stats = profileData ? [
+  // Calculate statistics — prefer CBIE data, fallback to old API
+  const stats = (cbieData || profileData) ? [
     { 
       label: 'Total Observations', 
-      value: profileData.statistics?.total_behaviors_analyzed || 0, 
-      change: '+14%', 
+      value: cbieData?.total_raw_behaviors ?? profileData?.statistics?.total_behaviors_analyzed ?? 0, 
+      change: cbieData ? `${cbieData.total_interests} interests` : '+14%', 
       type: 'positive', 
       icon: Activity, 
       color: 'text-indigo-600', 
@@ -189,8 +226,8 @@ const Dashboard = () => {
     },
     { 
       label: 'Behavior Clusters', 
-      value: profileData.statistics?.clusters_formed || 0, 
-      change: '+8%', 
+      value: cbieData?.total_interests ?? profileData?.statistics?.clusters_formed ?? 0, 
+      change: cbieData ? `${cbieData.stable_count} stable` : '+8%', 
       type: 'positive', 
       icon: Database, 
       color: 'text-blue-600', 
@@ -395,6 +432,11 @@ const Dashboard = () => {
                               <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
                               <span className="text-2xl">Loading Profile...</span>
                             </div>
+                          ) : cbieData?.top_interest ? (
+                            <>
+                              Core Behaviour<br />
+                              <span className="text-indigo-600">Profile Active</span>
+                            </>
                           ) : profileData?.archetype ? (
                             <>
                               {profileData.archetype.split(' ').slice(0, 2).join(' ')}
@@ -411,6 +453,8 @@ const Dashboard = () => {
                         <p className="text-sm lg:text-base xl:text-lg text-slate-500 mb-4 lg:mb-6 xl:mb-8 max-w-lg leading-relaxed font-medium italic">
                           {loading ? (
                             '"Analyzing your interaction patterns..."'
+                          ) : cbieData ? (
+                            `"${cbieData.total_interests} confirmed interests (${cbieData.stable_count} stable, ${cbieData.emerging_count} emerging) from ${cbieData.total_raw_behaviors} behaviors."`
                           ) : profileData ? (
                             `"${profileData.statistics?.clusters_formed || 0} behavior clusters identified across ${Math.round(profileData.statistics?.analysis_time_span_days || 0)} days of interactions."`
                           ) : (
@@ -467,40 +511,40 @@ const Dashboard = () => {
                           <div className="w-40 h-40 flex items-center justify-center">
                             <Loader2 className="w-12 h-12 animate-spin text-indigo-600" />
                           </div>
-                        ) : profileData ? (
+                        ) : (cbieData || profileData) ? (
                           <>
                             <div className="bg-white rounded-2xl p-6 w-full text-center border border-slate-200 shadow-sm group-hover:shadow-xl transition-all">
                               <div className="flex items-center justify-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-indigo-500"></div>
-                                <span className="text-[10px] font-black text-indigo-600 uppercase tracking-widest">Core</span>
+                                <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Stable</span>
                               </div>
                               <div className="text-4xl font-black text-slate-900 mb-1">
-                                {profileData.behavior_clusters?.filter(c => c.tier === 'PRIMARY').length || 0}
+                                {cbieData?.stable_count ?? profileData?.behavior_clusters?.filter(c => c.tier === 'PRIMARY').length ?? 0}
                               </div>
                               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                Defining traits
+                                Core Interests
                               </div>
                             </div>
                             
                             <div className="bg-white rounded-2xl p-6 w-full text-center border border-slate-200 shadow-sm group-hover:shadow-xl transition-all">
                               <div className="flex items-center justify-center gap-2 mb-2">
-                                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Supporting</span>
+                                <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                                <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">Emerging</span>
                               </div>
                               <div className="text-4xl font-black text-slate-900 mb-1">
-                                {profileData.behavior_clusters?.filter(c => c.tier === 'SECONDARY').length || 0}
+                                {cbieData?.emerging_count ?? profileData?.behavior_clusters?.filter(c => c.tier === 'SECONDARY').length ?? 0}
                               </div>
                               <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                                Contextual
+                                Growing Patterns
                               </div>
                             </div>
                             
                             <div className="bg-slate-50 rounded-2xl p-4 w-full text-center border border-slate-200">
-                              <div className="text-2xl font-black text-slate-900">
-                                {Math.round(profileData.statistics?.analysis_time_span_days || 0)}d
+                              <div className="text-2xl font-black text-rose-600">
+                                {cbieData?.fact_count ?? 0}
                               </div>
                               <div className="text-xs font-bold text-slate-600 uppercase tracking-wider mt-1">
-                                Tracked
+                                Critical Facts
                               </div>
                             </div>
                           </>
