@@ -21,7 +21,7 @@ import {
   Info
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://127.0.0.1:8002';
+const API_BASE_URL = 'https://research.digitix365.com:8002';
 
 const UserProfiles = () => {
   const [profileData, setProfileData] = useState(null);
