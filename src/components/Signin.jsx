@@ -14,7 +14,7 @@ import {
 import { handleOAuthLogin } from '../config/api';
 import { GITHUB_CLIENT_ID, OAUTH_CONFIG } from '../config/oauth';
 
-const API_BASE_URL = 'https://research.digitix365.com:8000';
+const API_BASE_URL = 'https://research.digitix365.com';
 
 const Signin = () => {
   const navigate = useNavigate();
