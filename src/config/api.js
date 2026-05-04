@@ -1,5 +1,5 @@
 // API configuration
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://research.digitix365.com:8000';
+export const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://research.digitix365.com';
 export const API_VERSION = '/api/v1';
 
 // CBIE Engine API (port 6009)
